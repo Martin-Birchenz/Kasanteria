@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Node
+node_modules/
+.env
+
+# Production / Build
+dist/
+build/
+
+# IDEs y sistemas operativos
+.DS_Store
+.vscode/

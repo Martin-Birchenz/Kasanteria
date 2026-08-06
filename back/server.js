@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 const pool = require("./config/db.js");
 
@@ -16,14 +17,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/categories", categoryRoutes);
 app.use("/products", productRoutes);
-
-app.get("/api/health", (req, res) => {
-  res.json({
-    status: "ok",
-    message: "Servidor de Kasantería funcionando",
-    timestamp: new Date(),
-  });
-});
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);

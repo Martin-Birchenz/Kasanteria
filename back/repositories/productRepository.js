@@ -4,7 +4,7 @@ const ProductRepository = {
   // Función para obtener todos los productos
   getAll: async () => {
     const [rows] = await pool.query(
-      "SELECT p.*, i.image_path FROM products p LEFT JOIN products_images i ON p.id = i.product_id AND i.is_primary = 1 WHERE p.is_active = 1",
+      "SELECT p.*, i.image_path FROM products p LEFT JOIN product_image i ON p.id = i.product_id AND i.is_primary = 1 WHERE p.is_active = 1",
     );
     return rows;
   },
@@ -27,7 +27,7 @@ const ProductRepository = {
   },
   addImage: async (productId, imagePath, isPrimary) => {
     const [result] = await pool.query(
-      "INSERT INTO products_images (product_id, image_path, is_primary) VALUES (?, ?, ?)",
+      "INSERT INTO product_image (product_id, image_path, is_primary) VALUES (?, ?, ?)",
       [productId, imagePath, isPrimary],
     );
   },

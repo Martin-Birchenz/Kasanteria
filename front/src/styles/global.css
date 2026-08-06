@@ -1,0 +1,53 @@
+:root {
+  --primary: #a0604a;
+  --primary-light: #c9917a;
+  --secondary: #6b7c5c;
+  --secondary-dark: #3e4e32;
+  --bg: #f9f4ee;
+  --bg-soft: #ede4d8;
+  --text: #2d2d2d;
+  --text-soft: #7a6e66;
+
+  --font-main: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --border-radius: 8px;
+  --transition: all 0.25s ease-in-out;
+  --max-width: 1200px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-main);
+  line-height: 1.6;
+  color: var(--text);
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  width: 90%;
+}

@@ -1,6 +1,9 @@
 import "../styles/productCard.css";
+import { useCart } from "../context/CartContext.jsx";
 
 export const ProductCard = ({ product }) => {
+  const { addToCart } = useCart();
+
   const imageUrl = product.image_path
     ? `http://localhost:3000${product.image_path}`
     : "https://via.placeholder.com/300x300?text=Kasantereía";
@@ -29,7 +32,12 @@ export const ProductCard = ({ product }) => {
               minimumFractionDigits: 2,
             })}
           </span>
-          <button className="product-card__button">Añadir al carrito</button>
+          <button
+            className="product-card__button"
+            onClick={() => addToCart(product)}
+          >
+            Añadir al carrito
+          </button>
         </div>
       </div>
     </article>

@@ -6,6 +6,7 @@ import Cart from "../pages/Cart.jsx";
 import { Login } from "../pages/admin/Login.jsx";
 import { ProtectedRoute } from "../components/ProtectedRoute.jsx";
 import { AdminDashboard } from "../pages/admin/AdminDashboard.jsx";
+import { ProductDetail } from "../pages/ProductDetail.jsx";
 
 const AppRouter = () => {
   return (
@@ -15,10 +16,11 @@ const AppRouter = () => {
           <Route index element={<Home />} />
           <Route path="productos" element={<Catalog />} />
           <Route path="carrito" element={<Cart />} />
+          <Route path="productos/:id" element={<ProductDetail />} />
         </Route>
-        <Route path="login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

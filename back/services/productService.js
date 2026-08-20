@@ -1,11 +1,9 @@
 const ProductRepository = require("../repositories/productRepository.js");
 
 const ProductService = {
-  // Obtener todos los productos
   getAll: async () => {
     return await ProductRepository.getAll();
   },
-  // Crear un producto
   create: async (productData, files) => {
     if (!productData.name || !productData.price) {
       throw new Error("El nombre y el precio son obligatorios");

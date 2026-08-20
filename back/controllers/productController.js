@@ -1,4 +1,5 @@
 const ProductService = require("../services/productService.js");
+const ProductRepository = require("../repositories/productRepository.js");
 
 const ProductController = {
   getProduct: async (req, res) => {
@@ -9,12 +10,42 @@ const ProductController = {
       res.status(500).json({ error: error.message });
     }
   },
+  getProductById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const product = await ProductRepository.getById(id);
+      if (!product)
+        return res.status(404).json({ message: "Producto no encontrado" });
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
   createProduct: async (req, res) => {
     try {
       const productData = req.body;
       const files = req.files;
       const newProduct = await ProductService.create(productData, files);
       res.status(201).json(newProduct);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  toggleStatus: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { is_active } = req.body;
+      await ProductRepository.toggleStatus(id, is_active);
+      res.status(200).json({ message: "Producto actualizado con éxito" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  deleteProduct: async (req, res) => {
+    try {
+      const { id } = req.params;
+      await ProductRepository.deleteProduct(id);
+      res.status(200).json({ message: "Producto eliminado con éxito" });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

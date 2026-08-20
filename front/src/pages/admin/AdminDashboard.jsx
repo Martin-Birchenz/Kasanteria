@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { getProducts, getCategories } from "../../services/api";
-import { createProductWithImages } from "../../services/adminService.js";
+import {
+  createProductWithImages,
+  toggleProductsStatus,
+  deleteProduct,
+} from "../../services/adminService.js";
+import { Loader } from "../../components/Loader.jsx";
 import "../../styles/adminDashboard.css";
 
 export const AdminDashboard = () => {
@@ -36,6 +41,36 @@ export const AdminDashboard = () => {
       setError(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggle = async (productId, currentStatus) => {
+    try {
+      await toggleProductsStatus(productId, currentStatus, token);
+      setProducts((prev) =>
+        prev.map((p) => {
+          const id = p.idproducts || p.id;
+          if (id === productId) {
+            return { ...p, is_active: currentStatus === 1 ? 0 : 1 };
+          }
+          return p;
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+      setError(error);
+    }
+  };
+
+  const handleDelete = async (productId) => {
+    if (!window.confirm("¿Estás seguro de que quieres eliminar este producto?"))
+      return;
+    try {
+      await deleteProduct(productId, token);
+      setProducts((prev) => prev.filter((p) => p.idproducts !== productId));
+    } catch (error) {
+      console.error(error);
+      setError(error);
     }
   };
 
@@ -181,7 +216,7 @@ export const AdminDashboard = () => {
         <section className="admin-card">
           <h3>Inventario Actual ({products.length})</h3>
           {loading ? (
-            <p>Cargando productos...</p>
+            <Loader message="Cargando productos..." />
           ) : (
             <div className="table-responsive">
               <table className="admin-table">
@@ -192,6 +227,7 @@ export const AdminDashboard = () => {
                     <th>Precio</th>
                     <th>Stock</th>
                     <th>Estado</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -216,15 +252,26 @@ export const AdminDashboard = () => {
                         <td>${Number(p.price).toFixed(2)}</td>
                         <td>{p.stock}</td>
                         <td>
-                          <span
+                          <button
                             className={
                               p.is_active === 1
-                                ? "badge-active"
-                                : "badge-inactive"
+                                ? "badge-active btn-badge"
+                                : "badge-inactive btn-badge"
                             }
+                            onClick={() => handleToggle(id, p.is_active)}
                           >
-                            {p.is_active === 1 ? "Activo" : "Inactivo"}
-                          </span>
+                            {p.is_active === 1
+                              ? "Activo (Visible)"
+                              : "Pausado (Oculto)"}
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            className="btn-delete"
+                            onClick={() => handleDelete(id)}
+                          >
+                            Eliminar
+                          </button>
                         </td>
                       </tr>
                     );

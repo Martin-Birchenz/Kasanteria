@@ -17,21 +17,32 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("kasanteria-cart", JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product) => {
+  const addToCart = (product, quantity = 1) => {
+    const qty = Number(quantity) || 1;
+    const prodId = String(product.idproducts || product.id);
+
+    const imgPath =
+      product.image_path ||
+      product.images?.find((i) => i.is_primary === 1)?.image_path ||
+      product.images[0]?.image_path ||
+      "";
+
     setCart((prevCart) => {
       const existingProduct = prevCart.find(
-        (item) =>
-          (item.idproducts || item.id) === (product.idproducts || product.id),
+        (item) => String(item.idproducts || item.id) === prodId,
       );
 
       if (existingProduct) {
         return prevCart.map((item) =>
-          (item.idproducts || item.id) === (product.idproducts || product.id)
-            ? { ...item, quantity: item.quantity + 1 }
+          String(item.idproducts || item.id) === prodId
+            ? { ...item, quantity: Number(item.quantity) + qty }
             : item,
         );
       } else {
-        return [...prevCart, { ...product, quantity: 1 }];
+        return [
+          ...prevCart,
+          { ...product, image_path: imgPath, quantity: qty },
+        ];
       }
     });
   };

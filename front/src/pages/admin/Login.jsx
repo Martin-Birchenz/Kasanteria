@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../services/authService.js";
+import { loginRequest } from "../../services/authService.js";
 import "../../styles/login.css";
 
 export const Login = () => {
@@ -19,7 +19,9 @@ export const Login = () => {
     setError("");
 
     try {
-      const data = await login(email, password);
+      console.log("Enviando login desde React:", { email, password });
+      const data = await loginRequest(email, password);
+      console.log("Respuesta recibida del backend:", data);
       if (data && data.user && data.token) {
         login(data.user, data.token);
         navigate("/admin");
@@ -27,6 +29,7 @@ export const Login = () => {
         throw new Error("Error al iniciar sesión");
       }
     } catch (error) {
+      console.error("Error al intentar login:", error);
       const errorMessage = error?.message || "Error al iniciar sesión";
       setError(errorMessage);
     } finally {

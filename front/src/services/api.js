@@ -25,3 +25,11 @@ export const getCategories = async () => {
     throw error;
   }
 };
+
+export const getProductById = async (id) => {
+  const res = await fetch(`${API_URL}/products/${id}`);
+  if (!res.ok) {
+    throw new Error("Error al obtener el producto");
+  }
+  return res.json();
+};

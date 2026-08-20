@@ -1,6 +1,6 @@
 const api = "http://localhost:3000/auth";
 
-export const login = async (email, password) => {
+export const loginRequest = async (email, password) => {
   try {
     const response = await fetch(`${api}/login`, {
       method: "POST",

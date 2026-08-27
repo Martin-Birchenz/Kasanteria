@@ -33,7 +33,7 @@ const Cart = () => {
       itemsList += `${index + 1}. ${item.name} - ${price} c/u (${item.quantity} unidades) - ${subtotal} total\n`;
     });
     const totalFormatted = Number(totalPrice).toLocaleString("es-AR");
-    const message = `Nuevo pedido - ${SHOP_CONFIG.name.toUpperCase()}* 🧶
+    const message = `Nuevo pedido - ${shopConfig.name.toUpperCase()}* 🧶
 
 👤 *Datos del Cliente:*
 • Nombre: ${customerName}

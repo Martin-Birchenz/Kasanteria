@@ -3,18 +3,10 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    try {
-      const savedUser = localStorage.getItem("kasanteria-user");
-      return savedUser ? JSON.parse(savedUser) : null;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  });
-  const [token, setToken] = useState(() =>
-    localStorage.getItem("kasanteria-token"),
-  );
+  const [user, setUser] = useState(null);
+  // const [token, setToken] = useState(() =>
+  //   localStorage.getItem("kasanteria-token"),
+  // );
   const [loading, setLoading] = useState(true);
 
   // useEffect(() => {
@@ -30,35 +22,60 @@ export const AuthProvider = ({ children }) => {
   //   }
   // }, [token]);
 
-  const login = async (userData, authToken) => {
-    localStorage.setItem("kasanteria-user", JSON.stringify(userData));
-    localStorage.setItem("kasanteria-token", authToken);
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/auth/verify", {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.authenticated && data.user) {
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error(error);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkSession();
+  }, []);
+
+  const login = async (userData) => {
     setUser(userData);
-    setToken(authToken);
   };
 
-  const logout = () => {
-    localStorage.removeItem("kasanteria-user");
-    localStorage.removeItem("kasanteria-token");
-    setUser(null);
-    setToken(null);
+  const logout = async () => {
+    try {
+      await fetch("http://localhost:3000/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setUser(null);
+    }
   };
-
-  const isAuthenticated = Boolean(token);
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isAuthenticated, login, logout }}
+      value={{
+        user,
+        isAuthenticated: !!user,
+        isAdmin: user?.role === "admin",
+        login,
+        logout,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth debe estar dentro de un AuthProvider");
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);

@@ -33,8 +33,15 @@ const authController = {
       const token = jwt.sign(
         { id: user.idusers, email: user.email, role: user.role },
         SECRET_KEY,
-        { expiresIn: "24h" },
+        { expiresIn: "7h" },
       );
+
+      res.cookie("kasanteria_session", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 60 * 60 * 1000,
+      });
 
       return res.status(200).json({
         message: "Login successful",
@@ -66,6 +73,33 @@ const authController = {
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: "Internal server error" });
+    }
+  },
+  logout: async (req, res) => {
+    res.clearCookie("kasanteria_session");
+    return res.status(200).json({ message: "Logout successful" });
+  },
+  verifySession: async (req, res) => {
+    const token =
+      req.cookies?.kasanteria_session ||
+      req.headers["authorization"]?.split(" ")[1];
+
+    if (!token) {
+      return res.status(200).json({ authenticated: false, user: null });
+    }
+
+    try {
+      const decoded = jwt.verify(token, SECRET_KEY);
+      return res.status(200).json({
+        user: {
+          id: decoded.id,
+          email: decoded.email,
+          role: decoded.role,
+          name: decoded.name || decoded.email.split("@")[0],
+        },
+      });
+    } catch (err) {
+      return res.status(200).json({ authenticated: false, user: null });
     }
   },
 };

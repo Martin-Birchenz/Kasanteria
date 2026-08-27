@@ -24,13 +24,17 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const checkSession = async () => {
+      console.log("🔍 [AuthContext] Ejecutando checkSession...");
       try {
         const res = await fetch("http://localhost:3000/auth/verify", {
           method: "GET",
           credentials: "include",
         });
+        console.log("📡 [AuthContext] Status respuesta /verify:", res.status);
         const data = await res.json();
-        if (data.authenticated && data.user) {
+        console.log("📦 [AuthContext] Data recibida de /verify:", data);
+        if (data.user) {
+          console.log("✅ [AuthContext] Usuario autenticado:", data.user);
           setUser(data.user);
         } else {
           setUser(null);

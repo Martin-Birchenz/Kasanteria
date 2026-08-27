@@ -84,12 +84,21 @@ const authController = {
       req.cookies?.kasanteria_session ||
       req.headers["authorization"]?.split(" ")[1];
 
+    console.log(
+      "🍪 [Backend verifySession] Cookie recibida:",
+      token ? "Existe Token" : "NO hay token",
+    );
+
     if (!token) {
       return res.status(200).json({ authenticated: false, user: null });
     }
 
     try {
       const decoded = jwt.verify(token, SECRET_KEY);
+      console.log(
+        "👤 [Backend verifySession] Token decodificado con éxito:",
+        decoded,
+      );
       return res.status(200).json({
         user: {
           id: decoded.id,
@@ -99,6 +108,10 @@ const authController = {
         },
       });
     } catch (err) {
+      console.error(
+        "❌ [Backend verifySession] Error al verificar token JWT:",
+        err.message,
+      );
       return res.status(200).json({ authenticated: false, user: null });
     }
   },

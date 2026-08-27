@@ -7,6 +7,7 @@ import { Login } from "../pages/admin/Login.jsx";
 import { ProtectedRoute } from "../components/ProtectedRoute.jsx";
 import { AdminDashboard } from "../pages/admin/AdminDashboard.jsx";
 import { ProductDetail } from "../pages/ProductDetail.jsx";
+import { AdminOrders } from "../pages/admin/AdminOrders.jsx";
 
 const AppRouter = () => {
   return (
@@ -22,6 +23,7 @@ const AppRouter = () => {
         <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -19,35 +19,50 @@ const Cart = () => {
   const [customerAddress, setCustomerAddress] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
 
-  const handleCheckWhatsapp = (e) => {
+  const handleCheckWhatsapp = async (e) => {
     e.preventDefault();
-
     if (cart.length === 0) return;
 
-    let itemsList = "";
-    cart.forEach((item, index) => {
-      const price = Number(item.price).toLocaleString("es-AR");
-      const subtotal = (Number(item.price) * item.quantity).toLocaleString(
-        "es-AR",
+    try {
+      console.log("🚀 [Cart] Enviando orden al backend...");
+      const res = await fetch("http://localhost:3000/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customer: {
+            name: customerName,
+            phone: customerPhone,
+            address: customerAddress,
+            notes: customerNotes,
+          },
+          items: cart,
+          total_price: totalPrice,
+          payment_method: "whatsapp",
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error("Error al crear la orden");
+      }
+
+      console.log("✅ [Cart] Orden creada con éxito en DB:", data);
+      const orderNumber = data.orderId ? `#${data.orderId}` : "";
+      const itemsList = cart.map(
+        (i) =>
+          `• ${i.name} x${i.quantity} ($${(i.price * i.quantity).toLocaleString("es-AR")})`,
       );
-      itemsList += `${index + 1}. ${item.name} - ${price} c/u (${item.quantity} unidades) - ${subtotal} total\n`;
-    });
-    const totalFormatted = Number(totalPrice).toLocaleString("es-AR");
-    const message = `Nuevo pedido - ${shopConfig.name.toUpperCase()}* 🧶
-
-👤 *Datos del Cliente:*
-• Nombre: ${customerName}
-• Teléfono: ${customerPhone}
-• Dirección/Ciudad: ${customerAddress}
-${customerNotes ? `• Notas: ${customerNotes}\n` : ""}
-📦 *Detalle del Pedido:*
-${itemsList}
-💰 *TOTAL: $${totalFormatted}*
-
-¡Hola! Quiero confirmar este pedido para coordinar el pago y la entrega. ¡Gracias!`;
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${shopConfig.whatsAppNumber}?text=${encodedMessage}`;
-    window.open(whatsappUrl, "_blank");
+      const message = `👋 ¡Hola Kasantería! Quiero coordinar mi pedido ${orderNumber}:%0A%0A${itemsList}%0A%0A💰 *Total: $${totalPrice.toLocaleString("es-AR")}*`;
+      window.open(
+        `https://wa.me/${shopConfig.whatsappNumber}?text=${message}`,
+        "_blank",
+      );
+      clearCart();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   if (cart.length === 0) {

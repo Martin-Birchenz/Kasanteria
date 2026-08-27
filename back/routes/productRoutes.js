@@ -5,6 +5,8 @@ const upload = require("../middlewares/upload.js");
 const { verifyToken } = require("../middlewares/authMiddleware.js");
 
 router.get("/", productController.getProduct);
+router.get("/featured", productController.getFeatured);
+router.get("/:id", productController.getProductById);
 router.post(
   "/",
   verifyToken,
@@ -13,6 +15,5 @@ router.post(
 );
 router.patch("/:id/status", verifyToken, productController.toggleStatus);
 router.delete("/:id", verifyToken, productController.deleteProduct);
-router.get("/:id", productController.getProductById);
 
 module.exports = router;

@@ -33,3 +33,11 @@ export const getProductById = async (id) => {
   }
   return res.json();
 };
+
+export const getFeatured = async () => {
+  const res = await fetch(`${API_URL}/products/featured`);
+  if (!res.ok) {
+    throw new Error("Error al obtener los productos destacados");
+  }
+  return res.json();
+};

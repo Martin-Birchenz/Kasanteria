@@ -20,6 +20,12 @@ const ProductRepository = {
     );
     return { ...row[0], images: image };
   },
+  getFeatured: async () => {
+    const [rows] = await pool.query(
+      "SELECT p.*, i.image_path FROM products p LEFT JOIN product_image i ON p.idproducts = i.product_id AND i.is_primary = 1 WHERE p.is_active = 1 AND p.is_featured = 1 LIMIT 6",
+    );
+    return rows;
+  },
   create: async (productData) => {
     const {
       subcategory_id,

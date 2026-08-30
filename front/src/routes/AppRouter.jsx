@@ -8,6 +8,9 @@ import { ProtectedRoute } from "../components/ProtectedRoute.jsx";
 import { AdminDashboard } from "../pages/admin/AdminDashboard.jsx";
 import { ProductDetail } from "../pages/ProductDetail.jsx";
 import { AdminOrders } from "../pages/admin/AdminOrders.jsx";
+import AdminLayout from "../layouts/AdminLayout.jsx";
+import { AdminCategories } from "../pages/admin/AdminCategories.jsx";
+import { AdminSubcategories } from "../pages/admin/AdminSubcategories.jsx";
 
 const AppRouter = () => {
   return (
@@ -21,9 +24,18 @@ const AppRouter = () => {
           <Route index element={<Home />} />
         </Route>
         <Route path="/login" element={<Login />} />
-        <Route element={<ProtectedRoute />}>
+
+        <Route
+          element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/categories" element={<AdminCategories />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/subcategories" element={<AdminSubcategories />} />
         </Route>
       </Routes>
     </BrowserRouter>

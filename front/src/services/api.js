@@ -41,3 +41,11 @@ export const getFeatured = async () => {
   }
   return res.json();
 };
+
+export const getSubcategories = async () => {
+  const res = await fetch(`${API_URL}/subcategories`);
+  if (!res.ok) {
+    throw new Error("Error al obtener las subcategorías");
+  }
+  return res.json();
+};

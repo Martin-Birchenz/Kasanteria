@@ -77,6 +77,20 @@ export const AdminOrders = () => {
     }
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "Reciente";
+    const d = new Date(dateStr);
+    return isNaN(d.getTime())
+      ? "Reciente"
+      : d.toLocaleDateString("es-AR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+  };
+
   return (
     <div className="admin-orders-container">
       <div className="orders-header">
@@ -95,10 +109,10 @@ export const AdminOrders = () => {
           <table className="orders-table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>Nº de orden</th>
                 <th>Fecha</th>
                 <th>Cliente</th>
-                <th>Método</th>
+                <th>Contacto y entrega</th>
                 <th>Total</th>
                 <th>Estado</th>
                 <th>Acciones</th>
@@ -112,16 +126,16 @@ export const AdminOrders = () => {
                     <td>
                       <strong>#{id}</strong>
                     </td>
-                    <td>
-                      {new Date(o.created_at).toLocaleDateString("es-AR")}
-                    </td>
+                    <td>{formatDate(o.created_at)}</td>
                     <td>{o.customer_name}</td>
                     <td>
-                      <span className="badge-method">{o.payment_method}</span>
+                      <div>📞 {o.customer_phone || "Sin teléfono"}</div>
+                      {o.customer_address && <div>📍 {o.customer_address}</div>}
+                      {o.customer_notes && <div>📝 {o.customer_notes}</div>}
                     </td>
                     <td>
                       <strong>
-                        ${Number(o.total_price).toLocaleString("es-AR")}
+                        ${Number(o.total_amount || 0).toLocaleString("es-AR")}
                       </strong>
                     </td>
                     <td>
@@ -169,14 +183,31 @@ export const AdminOrders = () => {
 
             <div className="order-summary-meta">
               <p>
+                <strong>Fecha:</strong> {formatDate(selectedOrder.created_at)}
+              </p>
+              <p>
                 <strong>Cliente:</strong> {selectedOrder.customer_name}
               </p>
               <p>
-                <strong>Estado:</strong> {selectedOrder.status.toUpperCase()}
+                <strong>Teléfono:</strong>{" "}
+                {selectedOrder.customer_phone || "Sin teléfono"}
+              </p>
+              <p>
+                <strong>Dirección:</strong>{" "}
+                {selectedOrder.customer_address || "Sin dirección"}
+              </p>
+              <p>
+                <strong>Notas del cliente:</strong>{" "}
+                {selectedOrder.customer_notes || "Sin notas"}
+              </p>
+              <p>
+                <strong>Estado:</strong> {selectedOrder.status?.toUpperCase()}
               </p>
               <p>
                 <strong>Total:</strong> $
-                {Number(selectedOrder.total_price).toLocaleString("es-AR")}
+                {Number(selectedOrder.total_amount || 0).toLocaleString(
+                  "es-AR",
+                )}
               </p>
             </div>
 
@@ -191,11 +222,14 @@ export const AdminOrders = () => {
                     <p className="item-name">{item.name}</p>
                     <span className="item-qty">
                       Cantidad: {item.quantity} x $
-                      {Number(item.unit_price).toLocaleString("es-AR")}
+                      {Number(item.price_at_purchase).toLocaleString("es-AR")}
                     </span>
                   </div>
                   <strong>
-                    ${(item.quantity * item.unit_price).toLocaleString("es-AR")}
+                    $
+                    {(
+                      item.quantity * Number(item.price_at_purchase)
+                    ).toLocaleString("es-AR")}
                   </strong>
                 </div>
               ))}

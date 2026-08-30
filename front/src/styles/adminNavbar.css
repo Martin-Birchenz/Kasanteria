@@ -1,0 +1,123 @@
+.admin-nav-wrapper {
+  background-color: #2b2622;
+  color: #ede8e3;
+  border-bottom: 3px solid #c89666;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.admin-nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.8rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.admin-brand-icon {
+  font-size: 2rem;
+}
+
+.admin-brand-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  color: #f7ede2;
+  letter-spacing: 0.5px;
+}
+
+.admin-user-tag {
+  font-size: 0.75rem;
+  color: #bfaea0;
+}
+
+.admin-links {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.admin-link {
+  color: #dfd3c3;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.admin-link:hover {
+  background-color: #3b342e;
+  color: #fff;
+}
+
+.admin-link.active {
+  background-color: #c89666;
+  color: #ffffff;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.btn-store-preview {
+  background-color: transparent;
+  color: #dfd3c3;
+  border: 1px solid #5a4e44;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-store-preview:hover {
+  background-color: #3b342e;
+  color: #fff;
+  border-color: #c89666;
+}
+
+.btn-logout {
+  background-color: #8c2a2a;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-logout:hover {
+  background-color: #a83232;
+}
+
+@media (max-width: 768px) {
+  .admin-nav-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .admin-links {
+    justify-content: center;
+  }
+  .admin-actions {
+    justify-content: flex-end;
+  }
+}

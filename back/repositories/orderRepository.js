@@ -1,12 +1,22 @@
 const pool = require("../config/db.js");
 
 const OrderRepository = {
-  create: async ({ customer_name, customer_phone, total_price, items }) => {
+  create: async ({
+    customer_name,
+    customer_phone,
+    customer_address,
+    customer_notes,
+    total_price,
+    items,
+  }) => {
     console.log("🛒 [OrderRepo] Iniciando creación de orden...");
     console.log("👤 [OrderRepo] Datos cliente:", {
       customer_name,
       customer_phone,
+      customer_address,
+      customer_notes,
       total_price,
+      items,
     });
     console.log("📦 [OrderRepo] Items:", items);
     const connection = await pool.getConnection();
@@ -16,13 +26,15 @@ const OrderRepository = {
 
       const name = customer_name || "Cliente web";
       const phone = customer_phone || null;
+      const address = customer_address || null;
+      const notes = customer_notes || null;
       const total = Number(total_price) || 0;
       const orderNumber = `ORD-${Date.now().toString().slice(-6)}`;
 
       console.log("➡️ [OrderRepo] Ejecutando INSERT en orders...");
       const [orderResult] = await connection.query(
-        "INSERT INTO orders (order_number, customer_name, customer_phone, total_amount, status) VALUES (?, ?, ?, ?, 'pendiente')",
-        [orderNumber, name, phone, total],
+        "INSERT INTO orders (order_number, customer_name, customer_phone, customer_address, customer_notes, total_amount, status) VALUES (?, ?, ?, ?, ?, ?, 'pendiente')",
+        [orderNumber, name, phone, address, notes, total],
       );
       const orderId = orderResult.insertId;
       console.log("✅ [OrderRepo] Orden insertada con ID:", orderId);
@@ -59,7 +71,7 @@ const OrderRepository = {
   getAll: async () => {
     try {
       const [rows] = await pool.query(
-        "SELECT * FROM orders ORDER BY created_at DESC",
+        "SELECT * FROM orders ORDER BY idorders DESC",
       );
       console.log(`📋 [OrderRepo] Obtenidas ${rows.length} órdenes.`);
       return rows;
@@ -70,15 +82,19 @@ const OrderRepository = {
   },
   getById: async (orderId) => {
     const [orders] = await pool.query(
-      "SELECT * FROM orders WHERE idorders = ? or id = ?",
-      [orderId, orderId],
+      "SELECT * FROM orders WHERE idorders = ?",
+      [orderId],
     );
     if (orders.length === 0) return null;
     const [items] = await pool.query(
-      `SELECT oi.idorder_items, oi.quantity, oi.price_at_purchase, p.name, p.description, i.image_path 
+      `SELECT 
+            oi.idorder_items, 
+            oi.quantity, 
+            oi.price_at_purchase, 
+            p.name, 
+            p.description 
          FROM order_items oi 
          JOIN products p ON oi.oi_product_id = p.idproducts 
-         LEFT JOIN product_image i ON p.idproducts = i.product_id AND i.is_primary = 1 
          WHERE oi.oi_order_id = ?`,
       [orderId],
     );
@@ -86,7 +102,7 @@ const OrderRepository = {
   },
   updateStatus: async (orderId, status) => {
     const [result] = await pool.query(
-      "UPDATE orders SET status = ? WHERE idorders = ? OR id = ?",
+      "UPDATE orders SET status = ? WHERE idorders = ?",
       [status, orderId],
     );
     return result.affectedRows > 0;

@@ -3,9 +3,7 @@ const api = "http://localhost:3000";
 export const createProductWithImages = async (formData, token) => {
   const response = await fetch(`${api}/products`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    credentials: "include",
     body: formData,
   });
   const data = await response.json();
@@ -20,8 +18,8 @@ export const toggleProductsStatus = async (productid, currentStatus, token) => {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
+    credentials: "include",
     body: JSON.stringify({ is_active: currentStatus === 1 ? 0 : 1 }),
   });
 
@@ -35,9 +33,7 @@ export const toggleProductsStatus = async (productid, currentStatus, token) => {
 export const deleteProduct = async (productId, token) => {
   const response = await fetch(`${api}/products/${productId}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    credentials: "include",
   });
 
   const data = await response.json();

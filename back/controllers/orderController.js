@@ -12,6 +12,8 @@ const OrderController = {
       const orderId = await OrderRepository.create({
         customer_name: customer?.name || "Cliente web",
         customer_phone: customer?.phone || null,
+        customer_address: customer?.address || null,
+        customer_notes: customer?.notes || null,
         total_price: Number(total_price) || 0,
         payment_method: payment_method || "whatsapp",
         items: items,

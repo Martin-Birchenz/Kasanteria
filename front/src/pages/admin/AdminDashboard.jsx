@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { getProducts, getCategories } from "../../services/api";
+import {
+  getProducts,
+  getCategories,
+  getSubcategories,
+} from "../../services/api";
 import {
   createProductWithImages,
   toggleProductsStatus,
@@ -14,6 +18,9 @@ export const AdminDashboard = () => {
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [filteredSubcategories, setFilteredSubcategories] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -23,6 +30,7 @@ export const AdminDashboard = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [subcategoryId, setSubcategoryId] = useState("");
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -30,17 +38,31 @@ export const AdminDashboard = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [productsData, categoriesData] = await Promise.all([
-        getProducts(),
-        getCategories(),
-      ]);
+      const [productsData, categoriesData, subcategoriesData] =
+        await Promise.all([getProducts(), getCategories(), getSubcategories()]);
       setProducts(productsData);
       setCategories(categoriesData);
+      setSubcategories(subcategoriesData);
     } catch (error) {
       console.error(error);
       setError(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCategoryChange = (event) => {
+    const categoryId = event.target.value;
+    setSelectedCategory(categoryId);
+    setSubcategoryId("");
+
+    if (!categoryId) {
+      setFilteredSubcategories([]);
+    } else {
+      const filtered = subcategories.filter(
+        (sub) => String(sub.category_id) === String(categoryId),
+      );
+      setFilteredSubcategories(filtered);
     }
   };
 
@@ -87,6 +109,12 @@ export const AdminDashboard = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!subcategoryId) {
+      setError("Selecciona una subcategoría");
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
     setMessage(null);
@@ -111,6 +139,8 @@ export const AdminDashboard = () => {
       setPrice("");
       setStock("");
       setSubcategoryId("");
+      setSelectedCategory("");
+      setFilteredSubcategories([]);
       setImages([]);
       setImagePreviews([]);
 
@@ -150,6 +180,46 @@ export const AdminDashboard = () => {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nombre del producto"
               />
+            </div>
+            <div className="form-row">
+              <div className="form-group col-half">
+                <label>Categoría</label>
+                <select
+                  value={selectedCategory}
+                  onChange={handleCategoryChange}
+                  required
+                >
+                  <option value="">Selecciona una categoría</option>
+                  {categories.map((cat) => (
+                    <option key={cat.idcategories} value={cat.idcategories}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="form-group col-half">
+              <label>Subcategoría</label>
+              <select
+                value={subcategoryId}
+                onChange={(e) => setSubcategoryId(e.target.value)}
+                disabled={!selectedCategory}
+                required
+              >
+                <option value="">
+                  {" "}
+                  {!selectedCategory
+                    ? "Elige una categoría primero"
+                    : filteredSubcategories.length === 0
+                      ? "Sin subcategorías"
+                      : "Selecciona una subcategoría"}{" "}
+                </option>
+                {filteredSubcategories.map((sub) => (
+                  <option key={sub.idsubcategories} value={sub.idsubcategories}>
+                    {sub.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="form-group">
               <label>Descripción</label>

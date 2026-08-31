@@ -36,6 +36,7 @@ const ProductController = {
       const newProduct = await ProductService.create(productData, files);
       res.status(201).json(newProduct);
     } catch (error) {
+      console.error(error);
       res.status(500).json({ error: error.message });
     }
   },

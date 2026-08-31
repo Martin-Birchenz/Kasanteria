@@ -17,7 +17,7 @@ export const AdminNavbar = () => {
         <div className="admin-brand">
           <span className="admin-brand-icon">🧶</span>
           <div>
-            <h1 className="admin-brand-title">Kasantería Admin</h1>
+            <h1 className="admin-brand-title">Punto y Trama</h1>
             <span className="admin-user-tag">
               Hola, {user?.name || "Administrador"}
             </span>

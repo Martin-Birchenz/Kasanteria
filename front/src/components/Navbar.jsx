@@ -9,7 +9,7 @@ const Navbar = () => {
     <header className="navbar-header">
       <div className="container navbar-container">
         <Link to="/" className="navbar-brand">
-          <h1>Kasantería</h1>
+          <h1>Punto y Trama</h1>
           <p>Mercería & Tejidos</p>
         </Link>
 

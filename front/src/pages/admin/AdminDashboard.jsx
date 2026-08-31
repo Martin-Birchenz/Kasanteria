@@ -125,7 +125,7 @@ export const AdminDashboard = () => {
       formData.append("description", description);
       formData.append("price", price);
       formData.append("stock", stock);
-      formData.append("subcategoryId", subcategoryId || 1);
+      formData.append("subcategory_id", subcategoryId);
 
       images.forEach((file) => {
         formData.append("images", file);
@@ -147,7 +147,7 @@ export const AdminDashboard = () => {
       loadData();
     } catch (error) {
       console.error(error);
-      setError(error);
+      setError(error.message || "Error al crear el producto");
     } finally {
       setSubmitting(false);
     }

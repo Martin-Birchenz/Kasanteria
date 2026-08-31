@@ -36,9 +36,16 @@ const ProductRepository = {
       stock,
       is_featured,
     } = productData;
+
+    const subCatId = Number(subcategory_id) || null;
+    const numPrice = Number(price) || 0;
+    const numStock = Number(stock) || 0;
+    const featured = Number(is_featured) || 0;
+    const desc = description || "";
+
     const [result] = await pool.query(
       "INSERT INTO products (subcategory_id, name, slug, description, price, stock, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [subcategory_id, name, slug, description, price, stock, is_featured],
+      [subCatId, name, slug, desc, numPrice, numStock, featured],
     );
     return result.insertId;
   },

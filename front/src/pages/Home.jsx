@@ -2,132 +2,115 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getFeatured } from "../services/api.js";
 import { useCart } from "../context/CartContext.jsx";
+import { getCategories, getSubcategories, getProducts } from "../services/api";
 import { Loader } from "../components/Loader.jsx";
-import "../styles/home.css";
+import "../styles/shopFlow.css";
+import { ProductGrid } from "../components/shop/ProductGrid.jsx";
+import { CategoryHero } from "../components/shop/CategoryHero.jsx";
+import { SubcategoryPills } from "../components/shop/SubcategoryPills.jsx";
 
 export const Home = () => {
   const [featured, setFeatured] = useState([]);
   const { addToCart } = useCart();
   const [loading, setLoading] = useState(true);
 
+  const [categories, setCategories] = useState([]);
+  const [allSubcategories, setAllSubcategories] = useState([]);
+  const [products, setProducts] = useState([]);
+
+  const [selectedCatId, setSelectedCatId] = useState("all");
+  const [selectedSubId, setSelectedSubId] = useState("all");
+
   useEffect(() => {
-    const loadFeatured = async () => {
+    const fetchInitialData = async () => {
       try {
         setLoading(true);
-        const data = await getFeatured();
-        setFeatured(Array.isArray(data) ? data : []);
+        const [cats, subs, prods] = await Promise.all([
+          getCategories(),
+          getSubcategories(),
+          getProducts(),
+        ]);
+        setCategories(cats);
+        setAllSubcategories(subs);
+        setProducts(prods.filter((p) => p.is_active === 1));
       } catch (error) {
-        console.error("Error al obtener los productos destacados", error);
+        console.error("Error al obtener los datos iniciales", error);
       } finally {
         setLoading(false);
       }
     };
-    loadFeatured();
+    fetchInitialData();
   }, []);
 
+  const handleSelectCategory = (catId) => {
+    setSelectedCatId(catId);
+    setSelectedSubId("all");
+  };
+
+  const handleSelectSubcategory = (subId) => {
+    setSelectedSubId(subId);
+  };
+
+  const handleAddToCart = (product) => {
+    alert(`Se añadió el producto ${product.name} a su carrito`);
+  };
+
+  const activeSubcategories =
+    selectedCatId === "all"
+      ? []
+      : allSubcategories.filter(
+          (sub) => String(sub.category_id) === String(selectedCatId),
+        );
+
+  const displayedProducts = products.filter((prod) => {
+    if (selectedCatId === "all") return true;
+
+    if (selectedSubId === "all") {
+      const allowedSubIds = activeSubcategories.map((sub) =>
+        String(sub.idsubcategories || sub.id),
+      );
+      return allowedSubIds.includes(String(prod.subcategory_id));
+    }
+    return String(prod.subcategory_id) === String(selectedSubId);
+  });
+
+  if (loading) {
+    return (
+      <div className="home-loader-wrap">
+        <Loader message="Cargando productos..." />
+      </div>
+    );
+  }
+
   return (
-    <div className="home-container">
-      <section className="hero-section">
-        <div className="hero-content">
-          <span className="hero-badge">Hilados y mercería creativa</span>
-          <h1>Dale vida a tus proyectos</h1>
-          <p>
-            Insumos, lanas de primera calidad y accesorios seleccionados con
-            dedicación
-          </p>
-          <div className="hero-actions">
-            <Link to="/productos" className="btn-hero-primary">
-              Ver catálogo completo
-            </Link>
-            <a
-              href="https://wa.me/5493435611122"
-              rel="noreferrer"
-              target="_blank"
-              className="btn-hero-secondary"
-            >
-              Consultar por Whatsapp
-            </a>
-          </div>
-        </div>
-      </section>
+    <main className="shop-main-container">
+      <CategoryHero
+        categories={categories}
+        selectedCatId={selectedCatId}
+        onSelectCategory={handleSelectCategory}
+      />
 
-      <section className="features-bar">
-        <div className="feature-item">
-          <span className="feature-icon">✨</span>
-          <div>
-            <h4>Calidad Garantizada</h4>
-            <p>Hilados seleccionados y probados</p>
-          </div>
-        </div>
-        <div className="feature-item">
-          <span className="feature-icon">🚚</span>
-          <div>
-            <h4>Envíos Seguros</h4>
-            <p>Coordinamos la entrega a tu medida</p>
-          </div>
-        </div>
-        <div className="feature-item">
-          <span className="feature-icon">💬</span>
-          <div>
-            <h4>Atención Directa</h4>
-            <p>Asesoramiento personalizado por WhatsApp</p>
-          </div>
-        </div>
-      </section>
+      <SubcategoryPills
+        subcategories={activeSubcategories}
+        selectedSubId={selectedSubId}
+        onSelectSubcategory={handleSelectSubcategory}
+      />
 
-      <section className="featured-section">
-        <div className="section-header">
-          <h2>Productos Destacados</h2>
-          <Link to="/productos" className="link-all">
-            Ver todos los productos
-          </Link>
-        </div>
+      <div className="shop-results-header">
+        <h2>
+          {selectedCatId === "all"
+            ? "Catálogo Completo"
+            : categories.find(
+                (c) => String(c.idcategories || c.id) === String(selectedCatId),
+              )?.name}
+        </h2>
+        <span className="results-badge">
+          {displayedProducts.length} productos
+        </span>
+      </div>
 
-        {loading ? (
-          <Loader message="Cargando productos destacados..." />
-        ) : featured.length === 0 ? (
-          <p className="no-featured">
-            No hay productos destacados por el momento.
-          </p>
-        ) : (
-          <div className="featured-grid">
-            {featured.map((product) => {
-              const id = product.idproducts || product.id;
-              const img = product.image_path
-                ? `http://localhost:3000${product.image_path}`
-                : "https://placehold.co/300x300/e2e8f0/475569?text=Kasanteria";
-
-              return (
-                <article key={id} className="featured-card">
-                  <Link to={`/productos/${id}`} className="featured-img-link">
-                    <img src={img} alt={product.name} loading="lazy" />
-                  </Link>
-
-                  <div className="featured-info">
-                    <Link to={`/productos/${id}`}>
-                      <h3>{product.name}</h3>
-                    </Link>
-                    <p className="featured-desc">{product.description}</p>
-                    <div className="featured-bottom">
-                      <span className="featured-price">
-                        ${Number(product.price).toLocaleString("es-AR")}
-                      </span>
-                      <button
-                        className="btn-add-featured"
-                        onClick={() => addToCart(product, 1)}
-                        disabled={product.stock <= 0}
-                      >
-                        {product.stock > 0 ? "Agregar 🛒" : "Agotado"}
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
-      </section>
-    </div>
+      <ProductGrid products={displayedProducts} onAddToCart={handleAddToCart} />
+    </main>
   );
 };
 

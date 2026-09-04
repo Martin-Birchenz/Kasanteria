@@ -1,69 +1,76 @@
-.navbar-header {
-  background-color: var(--bg-soft);
-  border-bottom: 1px solid var(--secondary-dark);
+.main-header {
+  background-color: var(--card-bg, #ffffff);
+  border-bottom: 1px solid var(--bg-soft, #ede4d8);
+  box-shadow: 0 2px 10px rgba(45, 45, 45, 0.04);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-.navbar-container {
+.header-top {
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+  padding: 1rem 1.5rem 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
 }
 
-.navbar-brand h1 {
-  color: var(--primary);
+.brand-logo {
   font-size: 1.6rem;
-  font-weight: bold;
-  letter-spacing: 0.5rem;
-  line-height: 1.1;
-}
-
-.navbar-brand span {
-  color: var(--text-soft);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5rem;
-}
-
-.navbar-nav {
-  display: flex;
-  gap: 2rem;
-}
-
-.nav-link {
-  color: var(--text);
-  font-weight: bold;
-  transition: var(--transition);
-}
-
-.nav-link:hover {
-  color: var(--primary);
-}
-
-.cart-button {
-  background-color: var(--primary);
+  font-weight: 800;
+  color: var(--primary, #a0604a);
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text);
-  font-weight: bold;
-  transition: var(--transition);
-  border-radius: var(--border-radius);
+  letter-spacing: -0.5px;
 }
 
-.cart-button:hover {
-  background-color: var(--primary-light);
-  color: var(--text-soft);
+.brand-symbol {
+  font-size: 1.8rem;
 }
 
-.cart-badge {
-  background-color: var(--primary);
-  color: var(--text);
-  font-weight: bold;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--border-radius);
-  transition: var(--transition);
+.nav-cart-btn {
+  background-color: var(--bg-soft, #ede4d8);
+  color: var(--text, #2d2d2d);
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.nav-cart-btn:hover {
+  background-color: var(--primary-light, #c9917a);
+  color: #ffffff;
+}
+
+.header-nav {
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+  padding: 0 1.5rem 0.8rem;
+  display: flex;
+  gap: 1.2rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.header-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-item {
+  color: var(--text-soft, #7a6e66);
+  font-weight: 600;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  padding: 0.3rem 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: var(--primary, #a0604a);
+  border-bottom-color: var(--primary, #a0604a);
 }

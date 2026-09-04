@@ -3,7 +3,12 @@ const pool = require("../config/db.js");
 const ProductRepository = {
   getAll: async () => {
     const [rows] = await pool.query(
-      "SELECT p.*, i.image_path FROM products p LEFT JOIN product_image i ON p.idproducts = i.product_id AND i.is_primary = 1 WHERE p.is_active = 1",
+      `SELECT p.*, i.image_path, s.name AS subcategory_name, c.name AS category_name
+       FROM products p 
+       LEFT JOIN product_image i ON p.idproducts = i.product_id AND i.is_primary = 1
+       LEFT JOIN subcategories s ON p.subcategory_id = s.idsubcategories
+       LEFT JOIN categories c ON s.category_id = c.idcategories
+       ORDER BY p.idproducts DESC`,
     );
     return rows;
   },
@@ -22,7 +27,11 @@ const ProductRepository = {
   },
   getFeatured: async () => {
     const [rows] = await pool.query(
-      "SELECT p.*, i.image_path FROM products p LEFT JOIN product_image i ON p.idproducts = i.product_id AND i.is_primary = 1 WHERE p.is_active = 1 AND p.is_featured = 1 LIMIT 6",
+      `SELECT p.*, i.image_path 
+       FROM products p 
+       LEFT JOIN product_image i ON p.idproducts = i.product_id AND i.is_primary = 1 
+       WHERE p.is_active = 1 AND p.is_featured = 1 
+       LIMIT 8`,
     );
     return rows;
   },
@@ -34,6 +43,8 @@ const ProductRepository = {
       description,
       price,
       stock,
+      unit_type,
+      min_stock,
       is_featured,
     } = productData;
 
@@ -42,12 +53,45 @@ const ProductRepository = {
     const numStock = Number(stock) || 0;
     const featured = Number(is_featured) || 0;
     const desc = description || "";
+    const unit = unit_type || "Unidad";
+    const min = min_stock || 5;
 
     const [result] = await pool.query(
-      "INSERT INTO products (subcategory_id, name, slug, description, price, stock, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [subCatId, name, slug, desc, numPrice, numStock, featured],
+      `INSERT INTO products 
+       (subcategory_id, name, slug, description, price, stock, unit_type, min_stock, is_featured, is_active) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+      [subCatId, name, slug, desc, numPrice, numStock, featured, unit, min],
     );
     return result.insertId;
+  },
+  update: async (id, productData) => {
+    const {
+      subcategory_id,
+      name,
+      slug,
+      description,
+      price,
+      stock,
+      unit_type,
+      min_stock,
+      is_featured,
+    } = productData;
+
+    const subCatId = Number(subcategory_id) || null;
+    const numPrice = Number(price) || 0;
+    const numStock = Number(stock) || 0;
+    const featured = Number(is_featured) || 0;
+    const desc = description || "";
+    const unit = unit_type || "Unidad";
+    const min = min_stock || 5;
+
+    const [result] = await pool.query(
+      `UPDATE products 
+       SET subcategory_id = ?, name = ?, slug = ?, description = ?, price = ?, stock = ?, unit_type = ?, min_stock = ?
+       WHERE idproducts = ?`,
+      [subCatId, name, slug, desc, numPrice, numStock, featured, unit, min, id],
+    );
+    return result.affectedRows;
   },
   addImage: async (productId, imagePath, isPrimary) => {
     const [result] = await pool.query(
@@ -59,6 +103,13 @@ const ProductRepository = {
     const [result] = await pool.query(
       "UPDATE products SET is_active = ? WHERE idproducts = ?",
       [isActive, id],
+    );
+    return result.affectedRows;
+  },
+  toggleFeatured: async (id, isFeatured) => {
+    const [result] = await pool.query(
+      "UPDATE products SET is_featured = ? WHERE idproducts = ?",
+      [isFeatured, id],
     );
     return result.affectedRows;
   },

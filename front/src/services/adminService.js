@@ -13,8 +13,21 @@ export const createProductWithImages = async (formData, token) => {
   return data;
 };
 
-export const toggleProductsStatus = async (productid, currentStatus, token) => {
-  const response = await fetch(`${api}/products/${productid}/status`, {
+export const updateProductWithImages = async (productId, formData) => {
+  const response = await fetch(`${api}/products/${productId}`, {
+    method: "PUT",
+    credentials: "include",
+    body: formData,
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+  return data;
+};
+
+export const toggleProductsStatus = async (productId, currentStatus, token) => {
+  const response = await fetch(`${api}/products/${productId}/status`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -23,6 +36,22 @@ export const toggleProductsStatus = async (productid, currentStatus, token) => {
     body: JSON.stringify({ is_active: currentStatus === 1 ? 0 : 1 }),
   });
 
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+  return data;
+};
+
+export const toggleFeaturedStatus = async (productId, currentFeatured) => {
+  const response = await fetch(`${api}/products/${productId}/featured`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ is_featured: currentFeatured === 1 ? 0 : 1 }),
+  });
   const data = await response.json();
   if (!response.ok) {
     throw new Error(data.message);

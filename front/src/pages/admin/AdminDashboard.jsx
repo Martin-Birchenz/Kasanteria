@@ -7,7 +7,9 @@ import {
 } from "../../services/api";
 import {
   createProductWithImages,
+  updateProductWithImages,
   toggleProductsStatus,
+  toggleFeaturedStatus,
   deleteProduct,
 } from "../../services/adminService.js";
 import { Loader } from "../../components/Loader.jsx";
@@ -26,10 +28,13 @@ export const AdminDashboard = () => {
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
 
+  const [editingId, setEditingId] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
+  const [unitType, setUnitType] = useState("unidad");
+  const [minStock, setMinStock] = useState("5");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [subcategoryId, setSubcategoryId] = useState("");
   const [images, setImages] = useState([]);
@@ -64,6 +69,49 @@ export const AdminDashboard = () => {
       );
       setFilteredSubcategories(filtered);
     }
+  };
+
+  const handleEditClick = (product) => {
+    setEditingId(product.idproducts || product.id);
+    setName(product.name);
+    setDescription(product.description || "");
+    setPrice(product.price);
+    setStock(product.stock);
+    setUnitType(product.unit_type || "unidad");
+    setMinStock(product.min_stock || 5);
+
+    const currentSub = subcategories.find(
+      (sub) => String(sub.idsubcategories) === String(product.subcategory_id),
+    );
+
+    if (currentSub) {
+      setSelectedCategory(currentSub.category_id);
+      setFilteredSubcategories(
+        subcategories.filter(
+          (sub) => String(sub.category_id) === String(currentSub.category_id),
+        ),
+      );
+      setSubcategoryId(currentSub.idsubcategories);
+    }
+
+    setImages([]);
+    setImagePreviews([]);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setName("");
+    setDescription("");
+    setPrice("");
+    setStock("");
+    setUnitType("unidad");
+    setMinStock(5);
+    setSelectedCategory("");
+    setSubcategoryId("");
+    setFilteredSubcategories([]);
+    setImages([]);
+    setImagePreviews([]);
   };
 
   const handleToggle = async (productId, currentStatus) => {
@@ -131,25 +179,39 @@ export const AdminDashboard = () => {
         formData.append("images", file);
       });
 
-      await createProductWithImages(formData, token);
-      setMessage("Producto creado exitosamente");
+      if (editingId) {
+        await updateProductWithImages(editingId, formData);
+        setMessage("Producto actualizado exitosamente");
+      } else {
+        await createProductWithImages(formData, token);
+        setMessage("Producto creado exitosamente");
+      }
 
-      setName("");
-      setDescription("");
-      setPrice("");
-      setStock("");
-      setSubcategoryId("");
-      setSelectedCategory("");
-      setFilteredSubcategories([]);
-      setImages([]);
-      setImagePreviews([]);
-
+      handleCancelEdit();
       loadData();
     } catch (error) {
       console.error(error);
-      setError(error.message || "Error al crear el producto");
+      setError(error.message || "Error al guardar el producto");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleToggleFeatured = async (productId, currentFeatured) => {
+    try {
+      await toggleFeaturedStatus(productId, currentFeatured);
+      setProducts((prev) =>
+        prev.map((p) => {
+          const id = p.idproducts || p.id;
+          if (id === productId) {
+            return { ...p, is_featured: currentFeatured === 1 ? 0 : 1 };
+          }
+          return p;
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+      setError(error);
     }
   };
 
@@ -157,115 +219,154 @@ export const AdminDashboard = () => {
     <div className="admin-container">
       <header className="admin-header">
         <div>
-          <h1>Dashboard de administración</h1>
+          <h1>Punto & Trama — Administración</h1>
           <p>
-            Bienvenido <strong> {user?.name || user?.email}</strong> (Admin)
+            Sesión: <strong>{user?.name || user?.email}</strong>
           </p>
         </div>
-        <button onClick={logout}>Cerrar sesión</button>
+        <button onClick={logout} className="btn-logout">
+          Cerrar sesión
+        </button>
       </header>
 
       {message && <div className="admin-alert success">{message}</div>}
       {error && <div className="admin-alert danger">{error}</div>}
 
       <div className="admin-grid">
+        {/* Formulario */}
         <section className="admin-card">
-          <h2>Productos</h2>
+          <h2>{editingId ? "✏️ Editar Producto" : "➕ Nuevo Producto"}</h2>
           <form className="admin-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Nombre del producto</label>
+              <label>Nombre del producto *</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Nombre del producto"
+                placeholder="Ej: Cinta Raso Doble Faz"
+                required
               />
             </div>
+
             <div className="form-row">
               <div className="form-group col-half">
-                <label>Categoría</label>
+                <label>Categoría *</label>
                 <select
                   value={selectedCategory}
                   onChange={handleCategoryChange}
                   required
                 >
-                  <option value="">Selecciona una categoría</option>
-                  {categories.map((cat) => (
-                    <option key={cat.idcategories} value={cat.idcategories}>
-                      {cat.name}
+                  <option value="">Selecciona categoría</option>
+                  {categories.map((c) => (
+                    <option key={c.idcategories} value={c.idcategories}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group col-half">
+                <label>Subcategoría *</label>
+                <select
+                  value={subcategoryId}
+                  onChange={(e) => setSubcategoryId(e.target.value)}
+                  disabled={!selectedCategory}
+                  required
+                >
+                  <option value="">
+                    {!selectedCategory
+                      ? "Elige categoría primero"
+                      : "Selecciona subcategoría"}
+                  </option>
+                  {filteredSubcategories.map((s) => (
+                    <option key={s.idsubcategories} value={s.idsubcategories}>
+                      {s.name}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
-            <div className="form-group col-half">
-              <label>Subcategoría</label>
-              <select
-                value={subcategoryId}
-                onChange={(e) => setSubcategoryId(e.target.value)}
-                disabled={!selectedCategory}
-                required
-              >
-                <option value="">
-                  {" "}
-                  {!selectedCategory
-                    ? "Elige una categoría primero"
-                    : filteredSubcategories.length === 0
-                      ? "Sin subcategorías"
-                      : "Selecciona una subcategoría"}{" "}
-                </option>
-                {filteredSubcategories.map((sub) => (
-                  <option key={sub.idsubcategories} value={sub.idsubcategories}>
-                    {sub.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Descripción</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Descripción del producto"
-              />
-            </div>
+
             <div className="form-row">
-              <div className="form-group col-md-6">
-                <label>Precio ($) * </label>
+              <div className="form-group col-half">
+                <label>Precio ($) *</label>
                 <input
                   type="number"
                   step="0.01"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  placeholder="Precio del producto"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              <div className="form-group col-half">
+                <label>Unidad de Venta *</label>
+                <select
+                  value={unitType}
+                  onChange={(e) => setUnitType(e.target.value)}
+                >
+                  <option value="unidad">Por Unidad</option>
+                  <option value="metro">Por Metro</option>
+                  <option value="100g">Por 100 gramos</option>
+                  <option value="kilo">Por Kilo</option>
+                  <option value="paquete">Por Paquete</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group col-half">
+                <label>Stock Disponible *</label>
+                <input
+                  type="number"
+                  value={stock}
+                  onChange={(e) => setStock(e.target.value)}
+                  placeholder="Cantidad actual"
+                  required
+                />
+              </div>
+
+              <div className="form-group col-half">
+                <label>Alerta de Stock Mínimo</label>
+                <input
+                  type="number"
+                  value={minStock}
+                  onChange={(e) => setMinStock(e.target.value)}
+                  placeholder="Avisar cuando baje de..."
                 />
               </div>
             </div>
+
             <div className="form-group">
-              <label>Stock disponible</label>
-              <input
-                type="number"
-                value={stock}
-                onChange={(e) => setStock(e.target.value)}
-                placeholder="Stock disponible"
+              <label>Descripción / Colores disponibles</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Colores: Rojo, Azul marino, Blanco tiza. Grosor: 25mm..."
+                rows="3"
               />
             </div>
+
             <div className="form-group">
-              <label>Imágenes del producto</label>
+              <label>
+                {editingId
+                  ? "Agregar más imágenes (opcional)"
+                  : "Imágenes del producto"}
+              </label>
               <input
                 type="file"
                 multiple
                 accept="image/*"
                 onChange={handleImageChange}
-                placeholder="Subir imágenes del producto"
               />
             </div>
 
             {imagePreviews.length > 0 && (
               <div className="preview-container">
-                {imagePreviews.map((src, index) => (
+                {imagePreviews.map((src, i) => (
                   <img
-                    key={index}
+                    key={i}
                     src={src}
                     alt="Preview"
                     className="image-preview"
@@ -274,19 +375,42 @@ export const AdminDashboard = () => {
               </div>
             )}
 
-            <button
-              type="submit"
-              className="submit-button"
-              disabled={submitting}
-            >
-              {submitting ? "Guardando en la base de datos..." : "Guardar"}
-            </button>
+            <div className="form-actions">
+              <button
+                type="submit"
+                className="submit-button"
+                disabled={submitting}
+              >
+                {submitting
+                  ? "Guardando..."
+                  : editingId
+                    ? "💾 Guardar Cambios"
+                    : "➕ Publicar Producto"}
+              </button>
+              {editingId && (
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={handleCancelEdit}
+                >
+                  Cancelar
+                </button>
+              )}
+            </div>
           </form>
         </section>
+
+        {/* Listado */}
         <section className="admin-card">
-          <h3>Inventario Actual ({products.length})</h3>
+          <div className="card-header-flex">
+            <h3>Inventario ({products.length})</h3>
+            <button className="btn-refresh-sm" onClick={loadData}>
+              🔄
+            </button>
+          </div>
+
           {loading ? (
-            <Loader message="Cargando productos..." />
+            <Loader message="Cargando inventario..." />
           ) : (
             <div className="table-responsive">
               <table className="admin-table">
@@ -296,7 +420,8 @@ export const AdminDashboard = () => {
                     <th>Producto</th>
                     <th>Precio</th>
                     <th>Stock</th>
-                    <th>Estado</th>
+                    <th>Destacado</th>
+                    <th>Visibilidad</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
@@ -305,10 +430,15 @@ export const AdminDashboard = () => {
                     const id = p.idproducts || p.id;
                     const img = p.image_path
                       ? `http://localhost:3000${p.image_path}`
-                      : "https://via.placeholder.com/50x50?text=K";
+                      : "https://placehold.co/50x50?text=P&T";
+                    const isLowStock =
+                      Number(p.stock) <= Number(p.min_stock || 5);
 
                     return (
-                      <tr key={id}>
+                      <tr
+                        key={id}
+                        className={isLowStock ? "row-low-stock" : ""}
+                      >
                         <td>
                           <img
                             src={img}
@@ -318,30 +448,64 @@ export const AdminDashboard = () => {
                         </td>
                         <td>
                           <strong>{p.name}</strong>
+                          <div className="table-subcat-badge">
+                            {p.category_name} ➔ {p.subcategory_name}
+                          </div>
                         </td>
-                        <td>${Number(p.price).toFixed(2)}</td>
-                        <td>{p.stock}</td>
+                        <td>
+                          ${Number(p.price).toFixed(2)}
+                          <small className="unit-label">
+                            /{p.unit_type || "un"}
+                          </small>
+                        </td>
+                        <td>
+                          <span
+                            className={
+                              isLowStock ? "badge-low-stock" : "badge-ok-stock"
+                            }
+                          >
+                            {p.stock} {p.unit_type || "un."}
+                            {isLowStock && " ⚠️"}
+                          </span>
+                        </td>
                         <td>
                           <button
-                            className={
-                              p.is_active === 1
-                                ? "badge-active btn-badge"
-                                : "badge-inactive btn-badge"
+                            type="button"
+                            className={`btn-toggle-badge ${p.is_featured === 1 ? "featured-yes" : "featured-no"}`}
+                            onClick={() =>
+                              handleToggleFeatured(id, p.is_featured)
                             }
+                            title="Alternar destacado"
+                          >
+                            {p.is_featured === 1 ? "⭐ Sí" : "☆ No"}
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className={`btn-toggle-badge ${p.is_active === 1 ? "active-yes" : "active-no"}`}
                             onClick={() => handleToggle(id, p.is_active)}
                           >
-                            {p.is_active === 1
-                              ? "Activo (Visible)"
-                              : "Pausado (Oculto)"}
+                            {p.is_active === 1 ? "Visible" : "Pausado"}
                           </button>
                         </td>
                         <td>
-                          <button
-                            className="btn-delete"
-                            onClick={() => handleDelete(id)}
-                          >
-                            Eliminar
-                          </button>
+                          <div className="actions-cell">
+                            <button
+                              className="btn-action-edit"
+                              onClick={() => handleEditClick(p)}
+                              title="Editar producto"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              className="btn-action-delete"
+                              onClick={() => handleDelete(id)}
+                              title="Eliminar producto"
+                            >
+                              🗑️
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

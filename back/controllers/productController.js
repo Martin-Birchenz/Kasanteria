@@ -40,11 +40,34 @@ const ProductController = {
       res.status(500).json({ error: error.message });
     }
   },
+  updateProduct: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updatedProduct = await ProductService.update(
+        id,
+        req.body,
+        req.files,
+      );
+      res.status(200).json(updatedProduct);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
   toggleStatus: async (req, res) => {
     try {
       const { id } = req.params;
       const { is_active } = req.body;
       await ProductRepository.toggleStatus(id, is_active);
+      res.status(200).json({ message: "Producto actualizado con éxito" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  toggleFeatured: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { is_featured } = req.body;
+      await ProductRepository.toggleFeatured(id, is_featured);
       res.status(200).json({ message: "Producto actualizado con éxito" });
     } catch (error) {
       res.status(500).json({ error: error.message });

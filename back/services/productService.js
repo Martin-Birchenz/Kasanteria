@@ -1,5 +1,14 @@
 const ProductRepository = require("../repositories/productRepository.js");
 
+const generateSlug = (name) => {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
+
 const ProductService = {
   getAll: async () => {
     return await ProductRepository.getAll();
@@ -8,14 +17,12 @@ const ProductService = {
     if (!productData.name || !productData.price) {
       throw new Error("El nombre y el precio son obligatorios");
     }
-    const slug = productData.name
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/[\s_-]+/g, "-")
-      .replace(/^-+|-+$/g, "");
+    const slug = generateSlug(productData.name);
+
     const completeData = { ...productData, slug };
+
     const productId = await ProductRepository.create(completeData);
+
     if (files && files.length > 0) {
       for (let i = 0; i < files.length; i++) {
         const imagePath = `/uploads/${files[i].filename}`;
@@ -24,6 +31,26 @@ const ProductService = {
       }
     }
     return { id: productId, ...completeData };
+  },
+  update: async (id, productData, files) => {
+    if (!productData.name || !productData.price) {
+      throw new Error("El nombre y el precio son obligatorios");
+    }
+    const slug = generateSlug(productData.name);
+
+    await ProductRepository.update(id, {
+      ...productData,
+      slug,
+    });
+
+    if (files && files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        const imagePath = `/uploads/${files[i].filename}`;
+        await ProductRepository.addImage(id, imagePath, 0);
+      }
+    }
+
+    return { id, ...productData, slug };
   },
 };
 

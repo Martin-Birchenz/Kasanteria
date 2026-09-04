@@ -13,7 +13,14 @@ router.post(
   upload.array("images", 5),
   productController.createProduct,
 );
+router.put(
+  "/:id",
+  verifyToken,
+  upload.array("images", 5),
+  productController.updateProduct,
+);
 router.patch("/:id/status", verifyToken, productController.toggleStatus);
+router.patch("/:id/featured", verifyToken, productController.toggleFeatured);
 router.delete("/:id", verifyToken, productController.deleteProduct);
 
 module.exports = router;

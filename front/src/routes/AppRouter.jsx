@@ -11,6 +11,7 @@ import { AdminOrders } from "../pages/admin/AdminOrders.jsx";
 import AdminLayout from "../layouts/AdminLayout.jsx";
 import { AdminCategories } from "../pages/admin/AdminCategories.jsx";
 import { AdminSubcategories } from "../pages/admin/AdminSubcategories.jsx";
+import { PaymentStatus } from "../pages/PaymentStatus.jsx";
 
 const AppRouter = () => {
   return (
@@ -22,6 +23,18 @@ const AppRouter = () => {
           <Route path="carrito" element={<Cart />} />
           <Route path="productos/:id" element={<ProductDetail />} />
           <Route index element={<Home />} />
+          <Route
+            path="/pago/exitoso"
+            element={<PaymentStatus type="success" />}
+          />
+          <Route
+            path="/pago/fallido"
+            element={<PaymentStatus type="failure" />}
+          />
+          <Route
+            path="/pago/pendiente"
+            element={<PaymentStatus type="pending" />}
+          />
         </Route>
         <Route path="/login" element={<Login />} />
 

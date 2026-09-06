@@ -1,0 +1,88 @@
+.payment-status-wrapper {
+  max-width: 650px;
+  margin: 3rem auto;
+  padding: 1.5rem;
+}
+
+.status-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--bg-soft, #ede4d8);
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(45, 45, 45, 0.05);
+}
+
+.status-icon-circle {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+}
+
+.status-card h1 {
+  font-size: 1.8rem;
+  color: var(--text, #2d2d2d);
+  margin-bottom: 0.5rem;
+}
+
+.status-subtitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--secondary, #6b7c5c);
+  margin-bottom: 1rem;
+}
+
+.status-description {
+  font-size: 0.95rem;
+  color: var(--text-soft, #7a6e66);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.status-order-chip {
+  display: inline-block;
+  background-color: var(--bg, #f9f4ee);
+  border: 1px solid var(--bg-soft, #ede4d8);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  color: var(--text, #2d2d2d);
+  margin-bottom: 2rem;
+}
+
+.status-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.btn-status-action {
+  color: #fff;
+  font-weight: 700;
+  padding: 0.85rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-success-view {
+  background-color: #2b7a4b;
+}
+
+.btn-failure-view {
+  background-color: #a0604a;
+}
+
+.btn-pending-view {
+  background-color: #d97706;
+}
+
+.btn-status-support {
+  font-size: 0.9rem;
+  color: var(--text-soft, #7a6e66);
+  text-decoration: underline;
+}
+
+.btn-status-support:hover {
+  color: var(--text, #2d2d2d);
+}

@@ -5,195 +5,421 @@ import { shopConfig } from "../config/shopConfig.js";
 import "../styles/cart.css";
 
 const Cart = () => {
-  const {
-    cart,
-    addToCart,
-    totalPrice,
-    decreaseQuantity,
-    removeFromCart,
-    clearCart,
-  } = useCart();
+  const { cart, updateQuantity, removeFromCart, clearCart, totalPrice } =
+    useCart();
 
   const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [customerAddress, setCustomerAddress] = useState("");
-  const [customerNotes, setCustomerNotes] = useState("");
-
-  const handleCheckWhatsapp = async (e) => {
-    e.preventDefault();
-    if (cart.length === 0) return;
-
-    try {
-      console.log("🚀 [Cart] Enviando orden al backend...");
-      const res = await fetch("http://localhost:3000/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          customer: {
-            name: customerName,
-            phone: customerPhone,
-            address: customerAddress,
-            notes: customerNotes,
-          },
-          items: cart,
-          total_price: totalPrice,
-          payment_method: "whatsapp",
-        }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error("Error al crear la orden");
-      }
-
-      console.log("✅ [Cart] Orden creada con éxito en DB:", data);
-      const orderNumber = data.orderId ? `#${data.orderId}` : "";
-      const itemsList = cart.map(
-        (i) =>
-          `• ${i.name} x${i.quantity} ($${(i.price * i.quantity).toLocaleString("es-AR")})`,
-      );
-      const message = `👋 ¡Hola Kasantería! Quiero coordinar mi pedido ${orderNumber}:%0A%0A${itemsList}%0A%0A💰 *Total: $${totalPrice.toLocaleString("es-AR")}*`;
-      window.open(
-        `https://wa.me/${shopConfig.whatsappNumber}?text=${message}`,
-        "_blank",
-      );
-      clearCart();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const [phone, setPhone] = useState("");
+  const [deliveryMethod, setDeliveryMethod] = useState("retiro");
+  const [postalCode, setPostalCode] = useState("");
+  const [address, setAddress] = useState("");
+  const [notes, setNotes] = useState("");
+  const [shippingCost, setShippingCost] = useState(0);
+  const [shippingInfo, setShippingInfo] = useState(null);
+  const [calculatingShipping, setCalculatingShipping] = useState(false);
 
   if (cart.length === 0) {
     return (
-      <div className="cart-empty container">
+      <main className="cart-empty-container">
         <h2>Tu carrito está vacío</h2>
         <p>Agrega algunos productos al carrito</p>
-        <Link to="/productos">Ver todos los productos</Link>
-      </div>
+        <Link to="/productos" className="btn-return-shop">
+          Explorar Catálogo
+        </Link>
+      </main>
     );
   }
 
+  const handleSendWhatsApp = (e) => {
+    e.preventDefault();
+
+    if (!customerName.trim() || !phone.trim()) {
+      alert("Por favor completá tu nombre y teléfono de contacto.");
+      return;
+    }
+
+    if (
+      (deliveryMethod === "flete" || deliveryMethod === "correo") &&
+      !address.trim()
+    ) {
+      alert("Por favor ingresá tu dirección para coordinar la entrega.");
+      return;
+    }
+
+    const businessPhone = "5493435611122";
+
+    let message = `🧵 *NUEVO PEDIDO - PUNTO & TRAMA*\n`;
+    message += `--------------------------------------\n`;
+    message += `👤 *Cliente:* ${customerName.trim()}\n`;
+    message += `📱 *Teléfono:* ${phone.trim()}\n`;
+
+    const deliveryTexts = {
+      retiro: "Retiro en taller / local (Gratis)",
+      flete: "Cadetería / Flete local",
+      correo: `Envío por Correo Argentino ${postalCode ? `(CP: ${postalCode})` : ""}`,
+    };
+    message += `🚚 *Método de entrega:* ${deliveryTexts[deliveryMethod]}\n`;
+
+    if (address.trim()) {
+      message += `📍 *Dirección:* ${address.trim()}\n`;
+    }
+    if (notes.trim()) {
+      message += `📝 *Notas:* ${notes.trim()}\n`;
+    }
+
+    message += `--------------------------------------\n`;
+    message += `📦 *DETALLE DEL PEDIDO:*\n`;
+
+    cart.forEach((item, index) => {
+      const unit = item.unit_type || "un";
+      const colorText =
+        item.selectedColor && item.selectedColor !== "Único"
+          ? ` [Color: ${item.selectedColor}]`
+          : "";
+      const subtotal = Number(item.price) * item.quantity;
+      message += `${index + 1}. *${item.name}*${colorText}\n`;
+      message += `   ↳ Cantidad: ${item.quantity} ${unit} | Subtotal: $${subtotal.toLocaleString("es-AR")}\n`;
+    });
+
+    message += `--------------------------------------\n`;
+    message += `💰 *TOTAL APROXIMADO:* $${totalPrice.toLocaleString("es-AR")}\n\n`;
+    message += `_Hola! Quiero confirmar la disponibilidad de este pedido para coordinar el pago y entrega._`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${businessPhone}?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, "_blank");
+  };
+
+  const handleCalculateShipping = async () => {
+    if (!postalCode || postalCode.length < 4) {
+      alert("Ingresá un código postal válido de 4 dígitos");
+      return;
+    }
+
+    try {
+      setCalculatingShipping(true);
+      const res = await fetch(
+        `http://localhost:3000/shipping/calculate?cp=${postalCode}`,
+      );
+      const data = await res.json();
+
+      if (res.ok) {
+        setShippingCost(Number(data.cost));
+        setShippingInfo(data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setCalculatingShipping(false);
+    }
+  };
+
+  const handleDeliveryChange = (method) => {
+    setDeliveryMethod(method);
+    if (method !== "correo") {
+      setShippingCost(0);
+      setShippingInfo(null);
+    }
+  };
+
+  const handlePayWithMercadoPago = async () => {
+    if (!customerName.trim() || !phone.trim()) {
+      alert("Por favor completá tu nombre y teléfono antes de pagar.");
+      return;
+    }
+
+    if (
+      (deliveryMethod === "flete" || deliveryMethod === "correo") &&
+      !address.trim()
+    ) {
+      alert("Por favor ingresá la dirección de entrega.");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        "http://localhost:3000/payments/create-preference",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customer: {
+              name: customerName,
+              phone: phone,
+              address:
+                `${address} ${postalCode ? `(CP: ${postalCode})` : ""}`.trim(),
+              notes: notes,
+            },
+            items: cart,
+            shippingCost: deliveryMethod === "correo" ? shippingCost : 0,
+          }),
+        },
+      );
+
+      const data = await res.json();
+      if (data.init_point) {
+        window.location.href = data.init_point;
+      } else {
+        alert("Hubo un error al generar el enlace de pago.");
+      }
+    } catch (err) {
+      console.error("Error conectando con Mercado Pago:", err);
+    }
+  };
+
   return (
-    <div className="cart-page container">
-      <h2>Resumen de compra</h2>
+    <main className="cart-page-container">
+      <h1 className="cart-title">Tu Carrito de Compras 🛍️</h1>
 
       <div className="cart-grid">
+        {/* Listado de Productos */}
         <section className="cart-items-section">
-          <div className="cart-items-header">
-            <span>Productos ({cart.length})</span>
-            <button className="btn-clear-cart" onClick={() => clearCart()}>
+          <div className="cart-header-row">
+            <h2>Productos ({cart.length})</h2>
+            <button
+              type="button"
+              className="btn-clear-cart"
+              onClick={clearCart}
+            >
               Vaciar carrito
             </button>
           </div>
+
           <div className="cart-items-list">
             {cart.map((item) => {
-              const id = item.idproducts || item.id;
-              const imageUrl = item.image_path
+              const img = item.image_path
                 ? `http://localhost:3000${item.image_path}`
-                : "https://placehold.co/80x80/e2e8f0/475569?text=K";
+                : "https://placehold.co/80x80/ede4d8/a0604a?text=P&T";
+
               return (
-                <article className="cart-item-card" key={id}>
-                  <img
-                    src={imageUrl}
-                    alt={item.name}
-                    className="cart-item-img"
-                    onError={(e) => {
-                      e.target.src =
-                        "https://placehold.co/80x80/e2e8f0/475569?text=K";
-                    }}
-                  />
-                  <div className="cart-items-details">
+                <article key={item.itemKey} className="cart-item-card">
+                  <img src={img} alt={item.name} className="cart-item-img" />
+
+                  <div className="cart-item-info">
                     <h3>{item.name}</h3>
-                    <p className="cart-item__price">
-                      {" "}
-                      $ {Number(item.price).toLocaleString("es-AR")} c/u
-                    </p>
+                    {item.selectedColor && item.selectedColor !== "Único" && (
+                      <span className="cart-item-color">
+                        Color: {item.selectedColor}
+                      </span>
+                    )}
+                    <span className="cart-item-unit-price">
+                      ${Number(item.price).toLocaleString("es-AR")} /
+                      {item.unit_type || "un"}
+                    </span>
                   </div>
 
-                  <div className="cart-items-quantity">
-                    <button onClick={() => decreaseQuantity(id)}>-</button>
+                  <div className="cart-item-counter">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateQuantity(item.itemKey, item.quantity - 1)
+                      }
+                    >
+                      -
+                    </button>
                     <span>{item.quantity}</span>
-                    <button onClick={() => addToCart(item)}>+</button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateQuantity(item.itemKey, item.quantity + 1)
+                      }
+                      disabled={item.quantity >= item.stock}
+                    >
+                      +
+                    </button>
                   </div>
+
                   <div className="cart-item-subtotal">
-                    ${" "}
+                    $
                     {(Number(item.price) * item.quantity).toLocaleString(
                       "es-AR",
                     )}
                   </div>
+
                   <button
+                    type="button"
                     className="btn-remove-item"
-                    onClick={() => removeFromCart(id)}
+                    onClick={() => removeFromCart(item.itemKey)}
+                    title="Eliminar producto"
                   >
-                    Eliminar
+                    ✕
                   </button>
                 </article>
               );
             })}
           </div>
         </section>
+
+        {/* Resumen y Checkout */}
         <section className="cart-checkout-section">
-          <h3>Datos de entrega y contacto</h3>
-          <form className="checkout-form" onSubmit={handleCheckWhatsapp}>
-            <div className="form-group">
-              <label>Nombre y apellido</label>
+          <h2>Finalizar Pedido</h2>
+
+          <form onSubmit={handleSendWhatsApp} className="checkout-form">
+            <div className="checkout-field">
+              <label htmlFor="cName">Tu Nombre Completo *</label>
               <input
+                id="cName"
                 type="text"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Nombre y apellido"
+                placeholder="Ej: Laura Gómez"
                 required
               />
             </div>
-            <div className="form-group">
-              <label>Teléfono</label>
+
+            <div className="checkout-field">
+              <label htmlFor="cPhone">Teléfono / WhatsApp *</label>
               <input
+                id="cPhone"
                 type="tel"
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-                placeholder="Teléfono"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Ej: 3435123456"
                 required
               />
             </div>
-            <div className="form-group">
-              <label>Dirección</label>
-              <input
-                type="text"
-                value={customerAddress}
-                onChange={(e) => setCustomerAddress(e.target.value)}
-                placeholder="Dirección"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Notas adicionales</label>
-              <textarea
-                value={customerNotes}
-                onChange={(e) => setCustomerNotes(e.target.value)}
-                placeholder="Notas adicionales"
-              />
-            </div>
-            <div className="checkout-summary">
-              <div className="summary-row total">
-                <span>Total</span>
-                <span>$ {Number(totalPrice).toLocaleString("es-AR")}</span>
+
+            <div className="checkout-field">
+              <label>Forma de Entrega *</label>
+              <div className="delivery-options">
+                <label
+                  className={`radio-pill ${deliveryMethod === "retiro" ? "selected" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="delivery"
+                    value="retiro"
+                    checked={deliveryMethod === "retiro"}
+                    onChange={(e) => setDeliveryMethod(e.target.value)}
+                  />
+                  Retiro en Taller (Gratis)
+                </label>
+
+                <label
+                  className={`radio-pill ${deliveryMethod === "flete" ? "selected" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="delivery"
+                    value="flete"
+                    checked={deliveryMethod === "flete"}
+                    onChange={(e) => setDeliveryMethod(e.target.value)}
+                  />
+                  Cadetería / Flete Local
+                </label>
+
+                <label
+                  className={`radio-pill ${deliveryMethod === "correo" ? "selected" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="delivery"
+                    value="correo"
+                    checked={deliveryMethod === "correo"}
+                    onChange={(e) => setDeliveryMethod(e.target.value)}
+                  />
+                  Correo Argentino
+                </label>
               </div>
             </div>
-            <button className="btn-whatsapp-checkout" type="submit">
-              Finalizar pedido por WhatsApp
-            </button>
-            <div className="divider-or">
-              <span>O paga online</span>
+
+            {deliveryMethod === "correo" && (
+              <div className="checkout-field">
+                <label htmlFor="cPostal">Código Postal</label>
+                <div className="cp-input-group">
+                  <input
+                    id="cPostal"
+                    type="number"
+                    value={postalCode}
+                    onChange={(e) => setPostalCode(e.target.value)}
+                    placeholder="Ej: 3150"
+                  />
+                  <button
+                    type="button"
+                    className="btn-calc-cp"
+                    onClick={handleCalculateShipping}
+                    disabled={calculatingShipping}
+                  >
+                    {calculatingShipping ? "Calculando..." : "Calcular Costo"}
+                  </button>
+                </div>
+                {shippingInfo && (
+                  <div className="shipping-badge-info">
+                    <span>🚚 {shippingInfo.name}</span>
+                    <strong>
+                      ${Number(shippingInfo.cost).toLocaleString("es-AR")}
+                    </strong>
+                    <small>({shippingInfo.estimated_days})</small>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {(deliveryMethod === "flete" || deliveryMethod === "correo") && (
+              <div className="checkout-field">
+                <label htmlFor="cAddress">Dirección de entrega *</label>
+                <input
+                  id="cAddress"
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Calle, número, piso/depto y localidad"
+                  required
+                />
+              </div>
+            )}
+
+            <div className="checkout-field">
+              <label htmlFor="cNotes">Aclaraciones adicionales</label>
+              <textarea
+                id="cNotes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Preferencias de horario, dudas de grosor, etc."
+                rows="2"
+              />
             </div>
-            <button className="btn-mp-placeholder" type="button">
-              Pagar con Mercado Pago
+
+            <div className="checkout-summary-box">
+              <div className="summary-row">
+                <span>Subtotal productos:</span>
+                <span>${totalPrice.toLocaleString("es-AR")}</span>
+              </div>
+              {deliveryMethod === "correo" && (
+                <div className="summary-row">
+                  <span>Costo de envío:</span>
+                  <span>${shippingCost.toLocaleString("es-AR")}</span>
+                </div>
+              )}
+              <div className="summary-row total">
+                <span>Total Estimado:</span>
+                <span>
+                  ${(totalPrice + shippingCost).toLocaleString("es-AR")}
+                </span>
+              </div>
+              <small className="summary-hint">
+                * El envío se abona o coordina directamente por WhatsApp según
+                destino.
+              </small>
+            </div>
+
+            <button type="submit" className="btn-submit-order">
+              Enviar Pedido por WhatsApp 📲
             </button>
+            <div className="checkout-buttons-group">
+              <button
+                type="button"
+                className="btn-mp-checkout"
+                onClick={handlePayWithMercadoPago}
+              >
+                Pagar con Mercado Pago 💳
+              </button>
+            </div>
           </form>
         </section>
       </div>
-    </div>
+    </main>
   );
 };
 

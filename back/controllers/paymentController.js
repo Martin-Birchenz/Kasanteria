@@ -1,80 +1,103 @@
-// controllers/paymentController.js
-const { preferenceClient } = require("../config/mp.js");
+const { MercadoPagoConfig, Preference, Payment } = require("mercadopago");
 
-const paymentController = {
-  createPreference: async (req, res) => {
+const client = new MercadoPagoConfig({
+  accessToken: process.env.MP_ACCESS_TOKEN || "",
+});
+
+const PaymentController = {
+  createPaymentPreference: async (req, res) => {
     try {
-      const { items, customer } = req.body || {};
+      const { customer, items, shippingCost } = req.body;
 
-      if (!items || !Array.isArray(items) || items.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "No hay productos válidos para procesar." });
+      if (!items || items.length === 0) {
+        return res.status(400).json({ error: "No hay productos en el pedido" });
       }
 
-      // Mapeo seguro asegurando que cada producto tenga valores por defecto
-      const mpItems = items.map((item) => {
-        const title = item.name || item.title || "Producto";
-        const price = Number(item.price || item.unit_price) || 0;
-        const quantity = Number(item.quantity) || 1;
+      const shipping = Number(shippingCost) || 0;
+      const subtotal = items.reduce(
+        (acc, item) => acc + Number(item.price) * Number(item.quantity),
+        0,
+      );
+      const totalAmount = subtotal + shipping;
 
-        return {
-          id: String(item.idproducts || item.id || Math.random()),
-          title: String(title),
-          description: String(item.description || title),
-          picture_url: item.image_path
-            ? `http://localhost:3000${item.image_path}`
-            : undefined,
-          quantity: quantity,
-          unit_price: price,
-          currency_id: "ARS",
-        };
+      const orderId = await OrderRepository.create({
+        customer_name: customer?.name || "Cliente web",
+        customer_phone: customer?.phone || null,
+        customer_address: customer?.address || null,
+        customer_notes: customer?.notes || null,
+        total_price: totalAmount,
+        items,
+        payment_method: "mercadopago",
       });
 
-      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+      const preferenceItems = items.map((prod) => ({
+        id: String(prod.idproducts || prod.id),
+        title: `${prod.name}${prod.selectedColor && prod.selectedColor !== "Único" ? ` (${prod.selectedColor})` : ""}`,
+        quantity: Number(prod.quantity) || 1,
+        unit_price: Number(prod.price),
+        currency_id: "ARS",
+      }));
 
-      // Datos seguros del comprador con valores por defecto
-      const payerName = customer && customer.name ? customer.name : "Comprador";
-      const payerEmail =
-        customer && customer.email
-          ? customer.email
-          : "comprador@kasanteria.com";
-      const payerPhone =
-        customer && customer.phone ? String(customer.phone) : "";
+      if (shippingCost > 0) {
+        preferenceItems.push({
+          id: "shipping-fee",
+          title: "Costo de Envío",
+          quantity: 1,
+          unit_price: shipping,
+          currency_id: "ARS",
+        });
+      }
 
-      const response = await preferenceClient.create({
+      const preference = new Preference(client);
+
+      const response = await preference.create({
         body: {
-          items: mpItems,
+          items: preferenceItems,
           payer: {
-            name: payerName,
-            email: payerEmail,
-            phone: {
-              number: payerPhone,
-            },
+            email: customerEmail || "cliente@ejemplo.com",
           },
           back_urls: {
-            success: `${frontendUrl}/checkout/success`,
-            failure: `${frontendUrl}/checkout/failure`,
-            pending: `${frontendUrl}/checkout/pending`,
+            success: "http://localhost:5173/pago/exitoso",
+            failure: "http://localhost:5173/pago/fallido",
+            pending: "http://localhost:5173/pago/pendiente",
           },
           auto_return: "approved",
-          statement_descriptor: "KASANTERIA",
+          notification_url: `${process.env.BACKEND_URL || "https://tu-dominio-ngrok.app"}/payments/webhook`,
         },
       });
 
-      return res.status(200).json({
-        id: response.id,
-        init_point: response.init_point,
-        sandbox_init_point: response.sandbox_init_point,
-      });
+      return res.status(200).json({ init_point: response.init_point, orderId });
     } catch (error) {
-      console.error("Error al crear preferencia en Mercado Pago:", error);
-      return res.status(500).json({
-        message: "Error al generar la preferencia de pago",
-        error: error.message,
-      });
+      console.error("💥 [MercadoPago Error]:", error);
+      return res.status(500).json({ error: error.message });
+    }
+  },
+  handleWebhook: async (req, res) => {
+    try {
+      const { query } = req;
+      const topic = query.topic || query.type;
+
+      if (topic === "payment") {
+        const paymentId = query.id || query["data.id"];
+        if (paymentId) {
+          const paymentInstance = new Payment(client);
+          const paymentData = await paymentInstance.get({ id: paymentId });
+
+          if (paymentData.status === "approved") {
+            const orderId = paymentData.external_reference;
+            if (orderId) {
+              await OrderRepository.confirmPayment(orderId, paymentId);
+            }
+          }
+        }
+      }
+
+      return res.status(200).send("OK");
+    } catch (error) {
+      console.error("💥 [MercadoPago Webhook Error]:", error);
+      return res.status(500).send("Error");
     }
   },
 };
 
-module.exports = paymentController;
+module.exports = PaymentController;

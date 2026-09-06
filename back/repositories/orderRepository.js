@@ -8,6 +8,7 @@ const OrderRepository = {
     customer_notes,
     total_price,
     items,
+    payment_method = "whatsapp",
   }) => {
     console.log("🛒 [OrderRepo] Iniciando creación de orden...");
     console.log("👤 [OrderRepo] Datos cliente:", {
@@ -17,6 +18,7 @@ const OrderRepository = {
       customer_notes,
       total_price,
       items,
+      payment_method,
     });
     console.log("📦 [OrderRepo] Items:", items);
     const connection = await pool.getConnection();
@@ -30,11 +32,12 @@ const OrderRepository = {
       const notes = customer_notes || null;
       const total = Number(total_price) || 0;
       const orderNumber = `ORD-${Date.now().toString().slice(-6)}`;
+      const paymentMethod = payment_method || "whatsapp";
 
       console.log("➡️ [OrderRepo] Ejecutando INSERT en orders...");
       const [orderResult] = await connection.query(
-        "INSERT INTO orders (order_number, customer_name, customer_phone, customer_address, customer_notes, total_amount, status) VALUES (?, ?, ?, ?, ?, ?, 'pendiente')",
-        [orderNumber, name, phone, address, notes, total],
+        "INSERT INTO orders (order_number, customer_name, customer_phone, customer_address, customer_notes, total_amount, status, payment_method) VALUES (?, ?, ?, ?, ?, ?, 'pendiente', ?)",
+        [orderNumber, name, phone, address, notes, total, paymentMethod],
       );
       const orderId = orderResult.insertId;
       console.log("✅ [OrderRepo] Orden insertada con ID:", orderId);
@@ -52,10 +55,12 @@ const OrderRepository = {
         console.log(
           `➡️ [OrderRepo] Actualizando stock del producto ${prodId}...`,
         );
-        await connection.query(
-          "UPDATE products SET stock = GREATEST(0, stock - ?) WHERE idproducts = ?",
-          [qty, prodId],
-        );
+        if (paymentMethod === "whatsapp") {
+          await connection.query(
+            "UPDATE products SET stock = GREATEST(0, stock - ?) WHERE idproducts = ?",
+            [qty, prodId],
+          );
+        }
       }
       await connection.commit();
       console.log("🎉 [OrderRepo] Transacción completada con éxito!");
@@ -99,6 +104,46 @@ const OrderRepository = {
       [orderId],
     );
     return { ...orders[0], items };
+  },
+  confirmPayment: async (orderId, paymentId) => {
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.beginTransaction();
+      const [rows] = await connection.query(
+        "SELECT status FROM orders WHERE idorders = ?",
+        [orderId],
+      );
+      if (rows.length === 0 || rows[0].status === "completado") {
+        await connection.rollback();
+        return;
+      }
+      await connection.query(
+        "UPDATE orders SET status = 'completado', payment_id = ? WHERE idorders = ?",
+        [String(paymentId), orderId],
+      );
+      const [items] = await connection.query(
+        "SELECT oi_product_id, quantity FROM order_items WHERE oi_order_id = ?",
+        [orderId],
+      );
+      for (const item of items) {
+        await connection.query(
+          "UPDATE products SET stock = GREATEST(0, stock - ?) WHERE idproducts = ?",
+          [item.quantity, item.oi_product_id],
+        );
+      }
+
+      await connection.commit();
+      console.log(
+        `✅ [OrderRepo] Orden #${orderId} completada y stock descontado.`,
+      );
+    } catch (error) {
+      await connection.rollback();
+      console.error("💥 [OrderRepo ERROR SQL DETALLADO]:", error);
+      throw error;
+    } finally {
+      connection.release();
+    }
   },
   updateStatus: async (orderId, status) => {
     const [result] = await pool.query(

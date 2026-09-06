@@ -7,38 +7,47 @@ import "../styles/productDetail.css";
 
 export const ProductDetail = () => {
   const { id } = useParams();
-  const { addToCart, decreaseQuantity, cart } = useCart();
+  const { addToCart } = useCart();
 
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [selectedColor, setSelectedColor] = useState("");
   const [error, setError] = useState(null);
-  const [added, setAdded] = useState(false);
-
-  const currentItem = cart.find(
-    (item) => String(item.idproducts || item.id) === String(id),
-  );
-
-  const quantityInCart = currentItem ? currentItem.quantity : 0;
+  const [addedMessage, setAddedMessage] = useState(false);
 
   useEffect(() => {
-    const fetchDetail = async () => {
+    const fetchProduct = async () => {
       try {
         setLoading(true);
-        const data = await getProductById(id);
+        const res = await fetch(`http://localhost:3000/products/${id}`);
+        if (!res.ok) throw new Error("Error al obtener el producto");
+        const data = await res.json();
         setProduct(data);
-        const primary =
-          data.images?.find((i) => i.is_primary === 1) || data.images[0];
-        setSelectedImage(primary ? primary.image_path : "");
+
+        if (data.images && data.images.length > 0) {
+          const primary =
+            data.images.find((img) => img.is_primary === 1) || data.images[0];
+          setSelectedImage(`http://localhost:3000${primary.image_path}`);
+        } else if (data.image_path) {
+          setSelectedImage(`http://localhost:3000${data.image_path}`);
+        }
       } catch (error) {
+        console.error(error);
         setError(error);
       } finally {
         setLoading(false);
       }
     };
-    fetchDetail();
+    fetchProduct();
   }, [id]);
+
+  // const currentItem = cart.find(
+  //   (item) => String(item.idproducts || item.id) === String(id),
+  // );
+
+  // const quantityInCart = currentItem ? currentItem.quantity : 0;
 
   const handleAddToCart = async () => {
     if (!product || product.stock <= 0) return;
@@ -47,15 +56,45 @@ export const ProductDetail = () => {
     setTimeout(() => setAdded(false), 2000);
   };
 
-  if (loading) return <Loader message="Cargando producto..." />;
-  if (error || !product) {
+  if (loading)
     return (
-      <div className="product-error-container">
+      <div className="detail-loader-wrap">
+        <Loader message="Cargando detalles del producto..." />
+      </div>
+    );
+
+  if (!product) {
+    return (
+      <div className="detail-error-wrap">
         <h2>Producto no encontrado</h2>
         <Link to="/productos">Volver a la página de productos</Link>
       </div>
     );
   }
+
+  const colorOptions = product.description?.toLowerCase().includes("colores:")
+    ? product.description
+        .split(/colores:/i)[1]
+        ?.split(".")[0]
+        .split(",")
+        .map((c) => c.trim())
+        .filter(Boolean)
+    : [];
+
+  const handleQuantityChange = (delta) => {
+    const nextVal = quantity + delta;
+    if (nextVal >= 1 && nextVal <= product.stock) {
+      setQuantity(nextVal);
+    }
+  };
+
+  const handleAdd = () => {
+    addToCart(product, quantity, selectedColor);
+    setAddedMessage(true);
+    setTimeout(() => setAddedMessage(false), 2500);
+  };
+
+  const isLowStock = product.stock <= (product.min_stock || 5);
 
   const mainImageUrl = selectedImage
     ? `http://localhost:3000${selectedImage}`
@@ -64,86 +103,145 @@ export const ProductDetail = () => {
   const maxStock = Number(product.stock) || 99;
 
   return (
-    <div className="product-detail-container">
-      <nav className="breadcrumbs">
-        <Link to="/productos">Volver a la página de productos</Link>
+    <main className="product-detail-container">
+      <nav className="breadcrumb-nav">
+        <Link to="/">Inicio</Link> <span>/</span>
+        <span className="breadcrumb-current">{product.name}</span>
       </nav>
 
       <div className="product-detail-grid">
-        <div className="gallery-section">
-          <div className="main-image-wrap">
-            <img src={mainImageUrl} alt={product.name} className="main-image" />
+        {/* Galería de imágenes */}
+        <section className="detail-gallery">
+          <div className="main-image-frame">
+            <img
+              src={
+                selectedImage ||
+                "https://placehold.co/500x500/ede4d8/a0604a?text=Punto+%26+Trama"
+              }
+              alt={product.name}
+            />
+            {product.is_featured === 1 && (
+              <span className="badge-featured-detail">Destacado ⭐</span>
+            )}
           </div>
-          {product.images?.length > 1 && (
-            <div className="thumbnails-row">
-              {product.images.map((img) => (
-                <button
-                  key={img.idproduct_image}
-                  className={`thumb-btn ${selectedImage === img.image_path ? "active" : ""}`}
-                  onClick={() => setSelectedImage(img.image_path)}
-                >
-                  <img
-                    src={`http://localhost:3000${img.image_path}`}
-                    alt={product.name}
-                    className="thumb-image"
-                  />
-                </button>
-              ))}
+
+          {product.images && product.images.length > 1 && (
+            <div className="thumbnails-track">
+              {product.images.map((img) => {
+                const fullUrl = `http://localhost:3000${img.image_path}`;
+                return (
+                  <button
+                    key={img.idproduct_image}
+                    type="button"
+                    className={`thumb-btn ${selectedImage === fullUrl ? "active" : ""}`}
+                    onClick={() => setSelectedImage(fullUrl)}
+                  >
+                    <img src={fullUrl} alt="Vista adicional" />
+                  </button>
+                );
+              })}
             </div>
           )}
-        </div>
-        <div className="product-actions-section">
-          <h2>{product.name}</h2>
-          <div className="price-tag">
-            ${Number(product.price).toLocaleString("es-AR")}
+        </section>
+
+        {/* Panel de Compra y Especificaciones */}
+        <section className="detail-info-panel">
+          <span className="detail-category-badge">
+            {product.category_name} ➔ {product.subcategory_name}
+          </span>
+
+          <h1 className="detail-title">{product.name}</h1>
+
+          <div className="detail-price-box">
+            <span className="detail-price">
+              ${Number(product.price).toLocaleString("es-AR")}
+            </span>
+            <span className="detail-unit">
+              por {product.unit_type || "unidad"}
+            </span>
           </div>
-          <div className="stock-info">
+
+          {/* Estado de Stock */}
+          <div className="detail-stock-status">
             {product.stock > 0 ? (
-              <span className="in-stock">
-                Stock disponible: <strong>{product.stock}</strong>
+              <span
+                className={`stock-pill ${isLowStock ? "low" : "available"}`}
+              >
+                {isLowStock
+                  ? `¡Últimas ${product.stock} unidades en stock!`
+                  : `Disponible: ${product.stock} ${product.unit_type || "unidades"}`}
               </span>
             ) : (
-              <span className="out-of-stock">
-                <strong>Sin stock por el momento</strong>
+              <span className="stock-pill out">Sin stock por el momento</span>
+            )}
+          </div>
+
+          {/* Selector de Color (si aplica) */}
+          {colorOptions.length > 0 && (
+            <div className="detail-option-group">
+              <label>Color disponible:</label>
+              <div className="color-pills">
+                {colorOptions.map((col, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`color-pill ${selectedColor === col ? "selected" : ""}`}
+                    onClick={() => setSelectedColor(col)}
+                  >
+                    {col}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Selector de Cantidad fraccionada o por unidad */}
+          <div className="detail-option-group">
+            <label>Cantidad ({product.unit_type || "unidad"}):</label>
+            <div className="quantity-counter">
+              <button
+                type="button"
+                onClick={() => handleQuantityChange(-1)}
+                disabled={quantity <= 1 || product.stock <= 0}
+              >
+                -
+              </button>
+              <span className="qty-number">{quantity}</span>
+              <button
+                type="button"
+                onClick={() => handleQuantityChange(1)}
+                disabled={quantity >= product.stock || product.stock <= 0}
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Acciones */}
+          <div className="detail-actions">
+            <button
+              className="btn-detail-add"
+              onClick={handleAdd}
+              disabled={product.stock <= 0}
+            >
+              {product.stock > 0 ? "Añadir al Carrito 🛒" : "Agotado"}
+            </button>
+            {addedMessage && (
+              <span className="cart-feedback-pill">
+                ¡Agregado al carrito! ✨
               </span>
             )}
           </div>
-          <div className="description-box">
-            <h4>Descripción</h4>
-            <p>{product.description || "No hay descripción disponible"}</p>
-          </div>
-          {product.stock > 0 && (
-            <div className="purchase-controls">
-              <div className="quantity-selector">
-                <button
-                  onClick={() =>
-                    decreaseQuantity(product.idproducts || product.id)
-                  }
-                  disabled={quantityInCart <= 0}
-                >
-                  -
-                </button>
-                <span>{quantityInCart}</span>
-                <button
-                  onClick={() => addToCart(product, 1)}
-                  disabled={quantityInCart >= (Number(product.stock) || 99)}
-                >
-                  +
-                </button>
-              </div>
-              <button
-                className="btn-add-detail"
-                onClick={() => addToCart(product, 1)}
-                disabled={quantityInCart >= (Number(product.stock) || 99)}
-              >
-                {quantityInCart > 0
-                  ? `En el carrito (${quantityInCart}) 🛒`
-                  : "Agregar al carrito 🛒"}{" "}
-              </button>
+
+          {/* Descripción completa */}
+          {product.description && (
+            <div className="detail-description">
+              <h3>Descripción del producto</h3>
+              <p>{product.description}</p>
             </div>
           )}
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 };

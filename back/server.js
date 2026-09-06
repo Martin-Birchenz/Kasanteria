@@ -11,6 +11,7 @@ const authRoutes = require("./routes/authRoutes.js");
 const paymentRoutes = require("./routes/paymentRoutes.js");
 const orderRoutes = require("./routes/orderRoutes.js");
 const subcategoryRoutes = require("./routes/subcategoryRoutes.js");
+const shippingRoutes = require("./routes/shippingRoutes.js");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -31,6 +32,7 @@ app.use("/auth", authRoutes);
 app.use("/payment", paymentRoutes);
 app.use("/orders", orderRoutes);
 app.use("/subcategories", subcategoryRoutes);
+app.use("/shipping", shippingRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);

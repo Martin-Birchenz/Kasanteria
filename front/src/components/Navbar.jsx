@@ -22,7 +22,7 @@ const Navbar = () => {
     <header className="main-header">
       <div className="header-top">
         <Link to="/" className="brand-logo">
-          <span className="brand-symbol">🧶</span> Punto &amp; Trama
+          Punto &amp; Trama
         </Link>
         <div className="header-actions">
           <Link to="/carrito" className="nav-cart-btn">

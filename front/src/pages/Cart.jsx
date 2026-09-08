@@ -9,6 +9,7 @@ const Cart = () => {
     useCart();
 
   const [customerName, setCustomerName] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [deliveryMethod, setDeliveryMethod] = useState("retiro");
   const [postalCode, setPostalCode] = useState("");
@@ -48,27 +49,31 @@ const Cart = () => {
 
     const businessPhone = "5493435611122";
 
-    let message = `🧵 *NUEVO PEDIDO - PUNTO & TRAMA*\n`;
-    message += `--------------------------------------\n`;
-    message += `👤 *Cliente:* ${customerName.trim()}\n`;
-    message += `📱 *Teléfono:* ${phone.trim()}\n`;
-
     const deliveryTexts = {
       retiro: "Retiro en taller / local (Gratis)",
       flete: "Cadetería / Flete local",
       correo: `Envío por Correo Argentino ${postalCode ? `(CP: ${postalCode})` : ""}`,
     };
-    message += `🚚 *Método de entrega:* ${deliveryTexts[deliveryMethod]}\n`;
 
-    if (address.trim()) {
-      message += `📍 *Dirección:* ${address.trim()}\n`;
+    // Declaración e inicialización en un solo paso
+    let waMessage = ` *NUEVO PEDIDO - PUNTO & TRAMA*\n`;
+    waMessage += `--------------------------------------\n`;
+    waMessage += ` *Cliente:* ${customerName.trim()}\n`;
+    if (email && email.trim()) {
+      waMessage += ` *Email:* ${email.trim()}\n`;
     }
-    if (notes.trim()) {
-      message += `📝 *Notas:* ${notes.trim()}\n`;
+    waMessage += ` *Teléfono:* ${phone.trim()}\n`;
+    waMessage += ` *Método de entrega:* ${deliveryTexts[deliveryMethod] || "A convenir"}\n`;
+
+    if (address && address.trim()) {
+      waMessage += ` *Dirección:* ${address.trim()}\n`;
+    }
+    if (notes && notes.trim()) {
+      waMessage += ` *Notas:* ${notes.trim()}\n`;
     }
 
-    message += `--------------------------------------\n`;
-    message += `📦 *DETALLE DEL PEDIDO:*\n`;
+    waMessage += `--------------------------------------\n`;
+    waMessage += ` *DETALLE DEL PEDIDO:*\n`;
 
     cart.forEach((item, index) => {
       const unit = item.unit_type || "un";
@@ -77,15 +82,15 @@ const Cart = () => {
           ? ` [Color: ${item.selectedColor}]`
           : "";
       const subtotal = Number(item.price) * item.quantity;
-      message += `${index + 1}. *${item.name}*${colorText}\n`;
-      message += `   ↳ Cantidad: ${item.quantity} ${unit} | Subtotal: $${subtotal.toLocaleString("es-AR")}\n`;
+      waMessage += `${index + 1}. *${item.name}*${colorText}\n`;
+      waMessage += `   ↳ Cantidad: ${item.quantity} ${unit} | Subtotal: $${subtotal.toLocaleString("es-AR")}\n`;
     });
 
-    message += `--------------------------------------\n`;
-    message += `💰 *TOTAL APROXIMADO:* $${totalPrice.toLocaleString("es-AR")}\n\n`;
-    message += `_Hola! Quiero confirmar la disponibilidad de este pedido para coordinar el pago y entrega._`;
+    waMessage += `--------------------------------------\n`;
+    waMessage += ` *TOTAL APROXIMADO:* $${(totalPrice + (deliveryMethod === "correo" ? shippingCost : 0)).toLocaleString("es-AR")}\n\n`;
+    waMessage += `_Hola! Quiero confirmar la disponibilidad de este pedido para coordinar el pago y entrega._`;
 
-    const encodedMessage = encodeURIComponent(message);
+    const encodedMessage = encodeURIComponent(waMessage);
     const whatsappUrl = `https://wa.me/${businessPhone}?text=${encodedMessage}`;
 
     window.open(whatsappUrl, "_blank");
@@ -115,17 +120,17 @@ const Cart = () => {
     }
   };
 
-  const handleDeliveryChange = (method) => {
-    setDeliveryMethod(method);
-    if (method !== "correo") {
-      setShippingCost(0);
-      setShippingInfo(null);
-    }
-  };
+  // const handleDeliveryChange = (method) => {
+  //   setDeliveryMethod(method);
+  //   if (method !== "correo") {
+  //     setShippingCost(0);
+  //     setShippingInfo(null);
+  //   }
+  // };
 
   const handlePayWithMercadoPago = async () => {
-    if (!customerName.trim() || !phone.trim()) {
-      alert("Por favor completá tu nombre y teléfono antes de pagar.");
+    if (!customerName.trim() || !phone.trim() || !email.trim()) {
+      alert("Por favor completá tu nombre, email y teléfono antes de pagar.");
       return;
     }
 
@@ -264,6 +269,18 @@ const Cart = () => {
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Ej: Laura Gómez"
+                required
+              />
+            </div>
+
+            <div className="checkout-field">
+              <label htmlFor="cEmail">Correo Electrónico *</label>
+              <input
+                id="cEmail"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Ej: laura@ejemplo.com"
                 required
               />
             </div>

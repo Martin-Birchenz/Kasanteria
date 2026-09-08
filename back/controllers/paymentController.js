@@ -1,4 +1,5 @@
 const { MercadoPagoConfig, Preference, Payment } = require("mercadopago");
+const OrderRepository = require("../repositories/OrderRepository.js");
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN || "",
@@ -54,15 +55,17 @@ const PaymentController = {
         body: {
           items: preferenceItems,
           payer: {
-            email: customerEmail || "cliente@ejemplo.com",
+            email: customer?.email || "cliente@ejemplo.com",
+            name: customer?.name || "Cliente web",
           },
+          external_reference: String(orderId),
           back_urls: {
             success: "http://localhost:5173/pago/exitoso",
             failure: "http://localhost:5173/pago/fallido",
             pending: "http://localhost:5173/pago/pendiente",
           },
-          auto_return: "approved",
-          notification_url: `${process.env.BACKEND_URL || "https://tu-dominio-ngrok.app"}/payments/webhook`,
+          // auto_return: "approved",
+          // notification_url: `${process.env.BACKEND_URL || "https://tu-dominio-ngrok.app"}/payments/webhook`,
         },
       });
 

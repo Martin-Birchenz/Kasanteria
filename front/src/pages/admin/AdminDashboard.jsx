@@ -217,18 +217,6 @@ export const AdminDashboard = () => {
 
   return (
     <div className="admin-container">
-      <header className="admin-header">
-        <div>
-          <h1>Punto & Trama — Administración</h1>
-          <p>
-            Sesión: <strong>{user?.name || user?.email}</strong>
-          </p>
-        </div>
-        <button onClick={logout} className="btn-logout">
-          Cerrar sesión
-        </button>
-      </header>
-
       {message && <div className="admin-alert success">{message}</div>}
       {error && <div className="admin-alert danger">{error}</div>}
 

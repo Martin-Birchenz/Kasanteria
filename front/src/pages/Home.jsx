@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext.jsx";
 import { getCategories, getSubcategories, getProducts } from "../services/api";
 import { Loader } from "../components/Loader.jsx";
 import "../styles/shopFlow.css";
+import heroImage from "../assets/home-image.png";
 
 export const Home = () => {
   const { addToCart } = useCart();
@@ -94,10 +95,7 @@ export const Home = () => {
         </div>
 
         <div className="hero-media-frame">
-          <img
-            src="https://images.unsplash.com/photo-1584992236310-6edddc08acff?q=80&w=900&auto=format&fit=crop"
-            alt="Detalle de hilados en taller"
-          />
+          <img src={heroImage} alt="Detalle de hilados en taller" />
         </div>
 
         <aside className="hero-workshop-card">
@@ -159,17 +157,16 @@ export const Home = () => {
           })}
         </div>
 
-        {/* Subcategorías como etiquetas vinculadas al ref */}
         {activeSubcategories.length > 0 && (
           <div
             ref={subcatSectionRef}
             style={{
               display: "flex",
               gap: "0.8rem",
-              marginTop: "2rem",
-              paddingTop: "1rem",
+              marginTop: "4rem",
+              paddingTop: "4rem",
               flexWrap: "wrap",
-              scrollMarginTop: "2.5rem",
+              scrollMarginTop: "4rem",
             }}
           >
             <button

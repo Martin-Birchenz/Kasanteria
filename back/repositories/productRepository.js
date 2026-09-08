@@ -60,7 +60,7 @@ const ProductRepository = {
       `INSERT INTO products 
        (subcategory_id, name, slug, description, price, stock, unit_type, min_stock, is_featured, is_active) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-      [subCatId, name, slug, desc, numPrice, numStock, featured, unit, min],
+      [subCatId, name, slug, desc, numPrice, numStock, unit, min, featured],
     );
     return result.insertId;
   },

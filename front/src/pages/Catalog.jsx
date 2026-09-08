@@ -136,7 +136,7 @@ const Catalog = () => {
             const id = product.idproducts || product.id;
             const img = product.image_path
               ? `http://localhost:3000${product.image_path}`
-              : "https://via.placeholder.com/300x300?text=Kasanteria";
+              : "https://placehold.co/400x400/ede4d8/a0604a?text=Punto+%26+Trama";
 
             return (
               <article key={id} className="product-card">

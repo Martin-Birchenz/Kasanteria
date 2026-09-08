@@ -29,7 +29,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/categories", categoryRoutes);
 app.use("/products", productRoutes);
 app.use("/auth", authRoutes);
-app.use("/payment", paymentRoutes);
+app.use("/payments", paymentRoutes);
 app.use("/orders", orderRoutes);
 app.use("/subcategories", subcategoryRoutes);
 app.use("/shipping", shippingRoutes);

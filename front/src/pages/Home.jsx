@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
 import { getCategories, getSubcategories, getProducts } from "../services/api";
@@ -16,6 +16,8 @@ export const Home = () => {
   const [selectedCatId, setSelectedCatId] = useState("all");
   const [selectedSubId, setSelectedSubId] = useState("all");
 
+  const subcatSectionRef = useRef(null);
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -26,7 +28,7 @@ export const Home = () => {
           getProducts(),
         ]);
         setCategories(cats);
-        setSubcategories(subs); // Corregido: antes decía setAllSubcategories
+        setSubcategories(subs);
         setProducts(prods.filter((p) => p.is_active === 1));
       } catch (error) {
         console.error("Error al obtener los datos iniciales", error);
@@ -36,6 +38,20 @@ export const Home = () => {
     };
     fetchInitialData();
   }, []);
+
+  const handleSelectCategory = (catId) => {
+    setSelectedCatId(catId);
+    setSelectedSubId("all");
+
+    if (catId !== "all") {
+      setTimeout(() => {
+        subcatSectionRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 120);
+    }
+  };
 
   const activeSubcategories =
     selectedCatId === "all"
@@ -65,7 +81,6 @@ export const Home = () => {
 
   return (
     <main className="shop-main-container">
-      {/* 1. HERO ASIMÉTRICO */}
       <section className="atelier-hero">
         <div className="hero-manifesto">
           <span className="hero-tagline">Mercería & Taller Textil</span>
@@ -103,7 +118,6 @@ export const Home = () => {
         </aside>
       </section>
 
-      {/* 2. MUESTRARIO DE CATEGORÍAS */}
       <section className="swatch-nav-section">
         <div className="section-editorial-header">
           <h2>Catálogo de Rubros</h2>
@@ -114,10 +128,7 @@ export const Home = () => {
           <button
             type="button"
             className={`swatch-card-btn ${selectedCatId === "all" ? "active" : ""}`}
-            onClick={() => {
-              setSelectedCatId("all");
-              setSelectedSubId("all");
-            }}
+            onClick={() => handleSelectCategory("all")}
           >
             <span className="swatch-index">00</span>
             <strong className="swatch-name">Todo el Atelier</strong>
@@ -138,10 +149,7 @@ export const Home = () => {
                 key={id}
                 type="button"
                 className={`swatch-card-btn ${String(selectedCatId) === String(id) ? "active" : ""}`}
-                onClick={() => {
-                  setSelectedCatId(id);
-                  setSelectedSubId("all");
-                }}
+                onClick={() => handleSelectCategory(id)}
               >
                 <span className="swatch-index">0{idx + 1}</span>
                 <strong className="swatch-name">{cat.name}</strong>
@@ -151,14 +159,17 @@ export const Home = () => {
           })}
         </div>
 
-        {/* Subcategorías como etiquetas */}
+        {/* Subcategorías como etiquetas vinculadas al ref */}
         {activeSubcategories.length > 0 && (
           <div
+            ref={subcatSectionRef}
             style={{
               display: "flex",
               gap: "0.8rem",
-              marginTop: "1.5rem",
+              marginTop: "2rem",
+              paddingTop: "1rem",
               flexWrap: "wrap",
+              scrollMarginTop: "2.5rem",
             }}
           >
             <button
@@ -195,7 +206,6 @@ export const Home = () => {
         )}
       </section>
 
-      {/* 3. GRILLA EDITORIAL DE PRODUCTOS */}
       <section className="shop-products-grid">
         {filteredProducts.map((p) => {
           const id = p.idproducts || p.id;

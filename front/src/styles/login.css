@@ -1,0 +1,118 @@
+/* --- LOGIN - ATELIER PUNTO & TRAMA --- */
+.login-container {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background-color: var(--bg, #f9f4ee);
+}
+
+.login-card {
+  background: #ffffff;
+  border: 1px solid var(--bg-soft, #ede4d8);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(45, 45, 45, 0.05);
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.login-card h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text, #2d2d2d);
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-align: center;
+}
+
+.login-card p {
+  font-size: 0.88rem;
+  color: var(--text-soft, #7a6e66);
+  text-align: center;
+  margin: -0.5rem 0 0.5rem;
+}
+
+/* Alerta de Error */
+.login-alert.danger {
+  background-color: #fff1f2;
+  color: #991b1b;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  border-left: 4px solid #e11d48;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* Campos del Formulario */
+.login-card .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.login-card .form-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-soft, #7a6e66);
+  letter-spacing: 0.2px;
+}
+
+.login-card .form-group input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  border: 1px solid #dfd7cc;
+  border-radius: 6px;
+  color: var(--text, #2d2d2d);
+  background-color: #ffffff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  outline: none;
+}
+
+.login-card .form-group input:focus {
+  border-color: var(--primary, #a0604a);
+  box-shadow: 0 0 0 3px rgba(160, 96, 74, 0.12);
+}
+
+/* Botón de Envío */
+.login-button {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.85rem;
+  background-color: var(--primary, #a0604a);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(160, 96, 74, 0.25);
+  transition: all 0.2s ease;
+}
+
+.login-button:hover:not(:disabled) {
+  background-color: #8c4f3b;
+  transform: translateY(-1px);
+}
+
+.login-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Adaptabilidad Mobile */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 2rem 1.5rem;
+  }
+}

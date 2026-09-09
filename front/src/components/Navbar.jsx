@@ -1,63 +1,81 @@
 import { Link, NavLink } from "react-router-dom";
 import "../styles/navbar.css";
 import { useCart } from "../context/CartContext.jsx";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Navbar = () => {
   const { totalItems } = useCart();
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await getCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  }, []);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <header className="main-header">
-      <div className="header-top">
-        <Link to="/" className="brand-logo">
+      <div className="header-inner">
+        {/* Hamburguesa Mobile */}
+        <button
+          type="button"
+          className={`hamburger-btn ${isOpen ? "open" : ""}`}
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Menú de navegación"
+        >
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
+        </button>
+
+        {/* Logo Central */}
+        <Link to="/" className="brand-logo" onClick={() => setIsOpen(false)}>
           Punto &amp; Trama
+          <span className="brand-sub">Mercería &amp; Taller</span>
         </Link>
+
+        {/* Navegación Principal */}
+        <nav className={`header-nav ${isOpen ? "open" : ""}`}>
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+            onClick={() => setIsOpen(false)}
+          >
+            Inicio
+          </NavLink>
+
+          <NavLink
+            to="/productos"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+            onClick={() => setIsOpen(false)}
+          >
+            Catálogo
+          </NavLink>
+
+          <a
+            href="https://wa.me/5493435611122"
+            target="_blank"
+            rel="noreferrer"
+            className="nav-item nav-external"
+            onClick={() => setIsOpen(false)}
+          >
+            Asesoramiento WhatsApp ↗
+          </a>
+        </nav>
+
+        {/* Acciones */}
         <div className="header-actions">
           <Link to="/carrito" className="nav-cart-btn">
-            🛒 Carrito <span className="cart-badge"> {totalItems} </span>
+            <span className="cart-icon">🛒</span>
+            <span className="cart-label">Mi carrito de compras</span>
+            <span className="cart-badge">{totalItems}</span>
           </Link>
         </div>
       </div>
 
-      <nav className="header-nav">
-        <NavLink
-          to="/"
-          className={({ isActive }) =>
-            isActive ? "nav-item active" : "nav-item"
-          }
-        >
-          Inicio
-        </NavLink>
-        <NavLink
-          to="/productos"
-          className={({ isActive }) =>
-            isActive ? "nav-item active" : "nav-item"
-          }
-        >
-          Todos los Productos
-        </NavLink>
-        {categories.map((cat) => (
-          <NavLink
-            key={cat.idcategories || cat.id}
-            to={`/productos?categoria=${cat.idcategories || cat.id}`}
-            className="nav-item nav-category-item"
-          >
-            {cat.name}
-          </NavLink>
-        ))}
-      </nav>
+      {/* Backdrop en celulares */}
+      {isOpen && (
+        <div className="mobile-backdrop" onClick={() => setIsOpen(false)} />
+      )}
     </header>
   );
 };

@@ -1,7 +1,6 @@
 import { useCart } from "../context/CartContext.jsx";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { shopConfig } from "../config/shopConfig.js";
 import "../styles/cart.css";
 
 const Cart = () => {
@@ -120,13 +119,13 @@ const Cart = () => {
     }
   };
 
-  // const handleDeliveryChange = (method) => {
-  //   setDeliveryMethod(method);
-  //   if (method !== "correo") {
-  //     setShippingCost(0);
-  //     setShippingInfo(null);
-  //   }
-  // };
+  const handleDeliveryChange = (method) => {
+    setDeliveryMethod(method);
+    if (method !== "correo") {
+      setShippingCost(0);
+      setShippingInfo(null);
+    }
+  };
 
   const handlePayWithMercadoPago = async () => {
     if (!customerName.trim() || !phone.trim() || !email.trim()) {
@@ -151,6 +150,7 @@ const Cart = () => {
           body: JSON.stringify({
             customer: {
               name: customerName,
+              email: email,
               phone: phone,
               address:
                 `${address} ${postalCode ? `(CP: ${postalCode})` : ""}`.trim(),
@@ -178,7 +178,6 @@ const Cart = () => {
       <h1 className="cart-title">Tu Carrito de Compras 🛍️</h1>
 
       <div className="cart-grid">
-        {/* Listado de Productos */}
         <section className="cart-items-section">
           <div className="cart-header-row">
             <h2>Productos ({cart.length})</h2>
@@ -256,7 +255,6 @@ const Cart = () => {
           </div>
         </section>
 
-        {/* Resumen y Checkout */}
         <section className="cart-checkout-section">
           <h2>Finalizar Pedido</h2>
 
@@ -308,7 +306,7 @@ const Cart = () => {
                     name="delivery"
                     value="retiro"
                     checked={deliveryMethod === "retiro"}
-                    onChange={(e) => setDeliveryMethod(e.target.value)}
+                    onChange={() => handleDeliveryChange("retiro")}
                   />
                   Retiro en Taller (Gratis)
                 </label>
@@ -321,7 +319,7 @@ const Cart = () => {
                     name="delivery"
                     value="flete"
                     checked={deliveryMethod === "flete"}
-                    onChange={(e) => setDeliveryMethod(e.target.value)}
+                    onChange={() => handleDeliveryChange("flete")}
                   />
                   Cadetería / Flete Local
                 </label>
@@ -334,7 +332,7 @@ const Cart = () => {
                     name="delivery"
                     value="correo"
                     checked={deliveryMethod === "correo"}
-                    onChange={(e) => setDeliveryMethod(e.target.value)}
+                    onChange={() => handleDeliveryChange("correo")}
                   />
                   Correo Argentino
                 </label>

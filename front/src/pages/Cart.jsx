@@ -1,6 +1,7 @@
 import { useCart } from "../context/CartContext.jsx";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { API_URL } from "../config/imageApi.js";
 import "../styles/cart.css";
 
 const Cart = () => {
@@ -193,7 +194,7 @@ const Cart = () => {
           <div className="cart-items-list">
             {cart.map((item) => {
               const img = item.image_path
-                ? `http://localhost:3000${item.image_path}`
+                ? `${API_URL}${item.image_path}`
                 : "https://placehold.co/80x80/ede4d8/a0604a?text=P&T";
 
               return (

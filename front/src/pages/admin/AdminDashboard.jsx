@@ -14,6 +14,7 @@ import {
 } from "../../services/adminService.js";
 import { Loader } from "../../components/Loader.jsx";
 import "../../styles/adminDashboard.css";
+import { API_URL } from "../../config/imageApi.js";
 
 export const AdminDashboard = () => {
   const { user, token, logout } = useAuth();
@@ -221,7 +222,6 @@ export const AdminDashboard = () => {
       {error && <div className="admin-alert danger">{error}</div>}
 
       <div className="admin-grid">
-        {/* Formulario */}
         <section className="admin-card">
           <h2>{editingId ? "✏️ Editar Producto" : "➕ Nuevo Producto"}</h2>
           <form className="admin-form" onSubmit={handleSubmit}>
@@ -388,7 +388,6 @@ export const AdminDashboard = () => {
           </form>
         </section>
 
-        {/* Listado */}
         <section className="admin-card">
           <div className="card-header-flex">
             <h3>Inventario ({products.length})</h3>
@@ -417,7 +416,7 @@ export const AdminDashboard = () => {
                   {products.map((p) => {
                     const id = p.idproducts || p.id;
                     const img = p.image_path
-                      ? `http://localhost:3000${p.image_path}`
+                      ? `${API_URL}${p.image_path}`
                       : "https://placehold.co/50x50?text=P&T";
                     const isLowStock =
                       Number(p.stock) <= Number(p.min_stock || 5);

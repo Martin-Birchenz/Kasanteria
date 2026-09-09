@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { getProducts, getCategories } from "../services/api.js";
 import ProductCard from "../components/ProductCard.jsx";
 import { Loader } from "../components/Loader.jsx";
+import { API_URL } from "../config/imageApi.js";
 import { useCart } from "../context/CartContext.jsx";
 import "../styles/catalog.css";
 import { Link } from "react-router-dom";
@@ -135,7 +136,7 @@ const Catalog = () => {
           {filteredProducts.map((product) => {
             const id = product.idproducts || product.id;
             const img = product.image_path
-              ? `http://localhost:3000${product.image_path}`
+              ? `${API_URL}${product.image_path}`
               : "https://placehold.co/400x400/ede4d8/a0604a?text=Punto+%26+Trama";
 
             return (

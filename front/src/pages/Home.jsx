@@ -207,7 +207,7 @@ export const Home = () => {
         {filteredProducts.map((p) => {
           const id = p.idproducts || p.id;
           const img = p.image_path
-            ? `http://localhost:3000${p.image_path}`
+            ? `${API_URL}${p.image_path}`
             : "https://placehold.co/400x400/ede4d8/a0604a?text=Punto+%26+Trama";
 
           return (

@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { getProductById } from "../services/api.js";
 import { Loader } from "../components/Loader.jsx";
 import { useCart } from "../context/CartContext.jsx";
+import { API_URL } from "../config/imageApi.js";
 import "../styles/productDetail.css";
 
 export const ProductDetail = () => {
@@ -97,7 +98,7 @@ export const ProductDetail = () => {
   const isLowStock = product.stock <= (product.min_stock || 5);
 
   const mainImageUrl = selectedImage
-    ? `http://localhost:3000${selectedImage}`
+    ? `${API_URL}${selectedImage}`
     : "https://placehold.co/400x400/e2e8f0/475569?text=Kasanteria";
 
   const maxStock = Number(product.stock) || 99;
@@ -110,7 +111,6 @@ export const ProductDetail = () => {
       </nav>
 
       <div className="product-detail-grid">
-        {/* Galería de imágenes */}
         <section className="detail-gallery">
           <div className="main-image-frame">
             <img
@@ -128,7 +128,7 @@ export const ProductDetail = () => {
           {product.images && product.images.length > 1 && (
             <div className="thumbnails-track">
               {product.images.map((img) => {
-                const fullUrl = `http://localhost:3000${img.image_path}`;
+                const fullUrl = `${API_URL}${img.image_path}`;
                 return (
                   <button
                     key={img.idproduct_image}
@@ -144,7 +144,6 @@ export const ProductDetail = () => {
           )}
         </section>
 
-        {/* Panel de Compra y Especificaciones */}
         <section className="detail-info-panel">
           <span className="detail-category-badge">
             {product.category_name} ➔ {product.subcategory_name}
@@ -161,7 +160,6 @@ export const ProductDetail = () => {
             </span>
           </div>
 
-          {/* Estado de Stock */}
           <div className="detail-stock-status">
             {product.stock > 0 ? (
               <span
@@ -176,7 +174,6 @@ export const ProductDetail = () => {
             )}
           </div>
 
-          {/* Selector de Color (si aplica) */}
           {colorOptions.length > 0 && (
             <div className="detail-option-group">
               <label>Color disponible:</label>
@@ -195,7 +192,6 @@ export const ProductDetail = () => {
             </div>
           )}
 
-          {/* Selector de Cantidad fraccionada o por unidad */}
           <div className="detail-option-group">
             <label>Cantidad ({product.unit_type || "unidad"}):</label>
             <div className="quantity-counter">
@@ -217,23 +213,19 @@ export const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Acciones */}
           <div className="detail-actions">
             <button
               className="btn-detail-add"
               onClick={handleAdd}
               disabled={product.stock <= 0}
             >
-              {product.stock > 0 ? "Añadir al Carrito 🛒" : "Agotado"}
+              {product.stock > 0 ? "Añadir al Carrito" : "Agotado"}
             </button>
             {addedMessage && (
-              <span className="cart-feedback-pill">
-                ¡Agregado al carrito! ✨
-              </span>
+              <span className="cart-feedback-pill">¡Agregado al carrito!</span>
             )}
           </div>
 
-          {/* Descripción completa */}
           {product.description && (
             <div className="detail-description">
               <h3>Descripción del producto</h3>

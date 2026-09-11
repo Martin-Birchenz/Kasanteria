@@ -1,5 +1,5 @@
 const { MercadoPagoConfig, Preference, Payment } = require("mercadopago");
-const OrderRepository = require("../repositories/OrderRepository.js");
+const OrderRepository = require("../repositories/orderRepository.js");
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN || "",

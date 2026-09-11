@@ -10,7 +10,6 @@ const Navbar = () => {
   return (
     <header className="main-header">
       <div className="header-inner">
-        {/* Hamburguesa Mobile */}
         <button
           type="button"
           className={`hamburger-btn ${isOpen ? "open" : ""}`}
@@ -22,10 +21,9 @@ const Navbar = () => {
           <span className="hamburger-line"></span>
         </button>
 
-        {/* Logo Central */}
         <Link to="/" className="brand-logo" onClick={() => setIsOpen(false)}>
           Punto &amp; Trama
-          <span className="brand-sub">Mercería &amp; Taller</span>
+          <span className="brand-sub">Mercería &amp; Telas</span>
         </Link>
 
         {/* Navegación Principal */}
@@ -62,7 +60,6 @@ const Navbar = () => {
           </a>
         </nav>
 
-        {/* Acciones */}
         <div className="header-actions">
           <Link to="/carrito" className="nav-cart-btn">
             <span className="cart-icon">🛒</span>
@@ -72,7 +69,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Backdrop en celulares */}
       {isOpen && (
         <div className="mobile-backdrop" onClick={() => setIsOpen(false)} />
       )}

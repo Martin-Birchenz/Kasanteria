@@ -14,7 +14,7 @@ import {
 } from "../../services/adminService.js";
 import { Loader } from "../../components/Loader.jsx";
 import "../../styles/adminDashboard.css";
-import { API_URL } from "../services/api.js";
+import { API_URL } from "../../services/api.js";
 
 export const AdminDashboard = () => {
   const { user, token, logout } = useAuth();

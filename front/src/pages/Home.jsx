@@ -5,6 +5,7 @@ import { getCategories, getSubcategories, getProducts } from "../services/api";
 import { Loader } from "../components/Loader.jsx";
 import "../styles/shopFlow.css";
 import heroImage from "../assets/home-image.png";
+import { API_URL } from "../config/imageApi.js";
 
 export const Home = () => {
   const { addToCart } = useCart();

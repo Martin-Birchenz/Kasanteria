@@ -1,16 +1,28 @@
-const mysql = require('mysql2/promise');
-require('dotenv').config()
+const mysql = require("mysql2/promise");
+require("dotenv").config();
 
 const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-})
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  port: Number(process.env.DB_PORT),
+  ssl: {
+    rejectUnauthorized: false, // Clave para que Aiven acepte la conexión desde Node en la nube
+  },
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
 
-pool.getConnection().then(connection => {console.log('Conexión a la base de datos establecida con éxito'); connection.release()}).catch(error => {console.error('Error al conectar a la base de datos', error.message)})
+pool
+  .getConnection()
+  .then((connection) => {
+    console.log("Conexión a la base de datos establecida con éxito");
+    connection.release();
+  })
+  .catch((error) => {
+    console.error("Error al conectar a la base de datos", error.message);
+  });
 
-module.exports = pool
+module.exports = pool;

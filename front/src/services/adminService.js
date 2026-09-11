@@ -1,5 +1,4 @@
-export const API_URL =
-  import.meta.env.VITE_API_URL || "https://punto-and-trama.onrender.com";
+import { API_URL } from "../services/api.js";
 
 export const createProductWithImages = async (formData, token) => {
   const response = await fetch(`${API_URL}/products`, {

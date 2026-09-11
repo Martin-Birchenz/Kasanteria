@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-export const API_URL =
-  import.meta.env.VITE_API_URL || "https://punto-and-trama.onrender.com";
+import { API_URL } from "../services/api.js";
 
 const AuthContext = createContext();
 
@@ -57,7 +56,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch("http://localhost:3000/auth/logout", {
+      await fetch(`${API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });

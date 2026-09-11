@@ -1,5 +1,4 @@
-export const API_URL =
-  import.meta.env.VITE_API_URL || "https://punto-and-trama.onrender.com";
+import { API_URL } from "../services/api.js";
 
 export const loginRequest = async (email, password) => {
   try {

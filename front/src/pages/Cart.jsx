@@ -1,7 +1,7 @@
 import { useCart } from "../context/CartContext.jsx";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { API_URL } from "../config/imageApi.js";
+import { API_URL } from "../services/api.js";
 import "../styles/cart.css";
 
 const Cart = () => {

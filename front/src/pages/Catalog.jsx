@@ -2,10 +2,10 @@ import { useEffect, useState, useMemo } from "react";
 import { getProducts, getCategories } from "../services/api.js";
 import ProductCard from "../components/ProductCard.jsx";
 import { Loader } from "../components/Loader.jsx";
-import { API_URL } from "../config/imageApi.js";
 import { useCart } from "../context/CartContext.jsx";
 import "../styles/catalog.css";
 import { Link } from "react-router-dom";
+import { API_URL } from "../services/api.js";
 
 const Catalog = () => {
   const [products, setProducts] = useState([]);

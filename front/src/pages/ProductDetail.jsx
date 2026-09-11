@@ -3,9 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import { getProductById } from "../services/api.js";
 import { Loader } from "../components/Loader.jsx";
 import { useCart } from "../context/CartContext.jsx";
-import { API_URL } from "../config/imageApi.js";
 import "../styles/productDetail.css";
-
+import { API_URL } from "../services/api.js";
 export const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();

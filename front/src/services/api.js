@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+export const API_URL =
+  import.meta.env.VITE_API_URL || "https://punto-and-trama.onrender.com";
 
 export const getProducts = async () => {
   try {

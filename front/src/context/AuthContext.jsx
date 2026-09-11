@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
+export const API_URL =
+  import.meta.env.VITE_API_URL || "https://punto-and-trama.onrender.com";
 
 const AuthContext = createContext();
 
@@ -26,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     const checkSession = async () => {
       console.log("🔍 [AuthContext] Ejecutando checkSession...");
       try {
-        const res = await fetch("http://localhost:3000/auth/verify", {
+        const res = await fetch(`${API_URL}/auth/verify`, {
           method: "GET",
           credentials: "include",
         });

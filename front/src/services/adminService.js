@@ -1,7 +1,8 @@
-const api = "http://localhost:3000";
+export const API_URL =
+  import.meta.env.VITE_API_URL || "https://punto-and-trama.onrender.com";
 
 export const createProductWithImages = async (formData, token) => {
-  const response = await fetch(`${api}/products`, {
+  const response = await fetch(`${API_URL}/products`, {
     method: "POST",
     credentials: "include",
     body: formData,
@@ -14,7 +15,7 @@ export const createProductWithImages = async (formData, token) => {
 };
 
 export const updateProductWithImages = async (productId, formData) => {
-  const response = await fetch(`${api}/products/${productId}`, {
+  const response = await fetch(`${API_URL}/products/${productId}`, {
     method: "PUT",
     credentials: "include",
     body: formData,
@@ -27,7 +28,7 @@ export const updateProductWithImages = async (productId, formData) => {
 };
 
 export const toggleProductsStatus = async (productId, currentStatus, token) => {
-  const response = await fetch(`${api}/products/${productId}/status`, {
+  const response = await fetch(`${API_URL}/products/${productId}/status`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -44,7 +45,7 @@ export const toggleProductsStatus = async (productId, currentStatus, token) => {
 };
 
 export const toggleFeaturedStatus = async (productId, currentFeatured) => {
-  const response = await fetch(`${api}/products/${productId}/featured`, {
+  const response = await fetch(`${API_URL}/products/${productId}/featured`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -60,7 +61,7 @@ export const toggleFeaturedStatus = async (productId, currentFeatured) => {
 };
 
 export const deleteProduct = async (productId, token) => {
-  const response = await fetch(`${api}/products/${productId}`, {
+  const response = await fetch(`${API_URL}/products/${productId}`, {
     method: "DELETE",
     credentials: "include",
   });

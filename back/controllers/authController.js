@@ -36,10 +36,10 @@ const authController = {
         { expiresIn: "7h" },
       );
 
-      res.cookie("kasanteria_session", token, {
+      res.cookie("puntoytrama", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
         maxAge: 7 * 60 * 60 * 1000,
       });
 
@@ -76,13 +76,12 @@ const authController = {
     }
   },
   logout: async (req, res) => {
-    res.clearCookie("kasanteria_session");
+    res.clearCookie("puntoytrama");
     return res.status(200).json({ message: "Logout successful" });
   },
   verifySession: async (req, res) => {
     const token =
-      req.cookies?.kasanteria_session ||
-      req.headers["authorization"]?.split(" ")[1];
+      req.cookies?.puntoytrama || req.headers["authorization"]?.split(" ")[1];
 
     console.log(
       "🍪 [Backend verifySession] Cookie recibida:",

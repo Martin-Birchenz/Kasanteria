@@ -87,9 +87,9 @@ const ProductRepository = {
 
     const [result] = await pool.query(
       `UPDATE products 
-       SET subcategory_id = ?, name = ?, slug = ?, description = ?, price = ?, stock = ?, unit_type = ?, min_stock = ?
+       SET subcategory_id = ?, name = ?, slug = ?, description = ?, price = ?, stock = ?, unit_type = ?, min_stock = ?, is_featured = ?
        WHERE idproducts = ?`,
-      [subCatId, name, slug, desc, numPrice, numStock, featured, unit, min, id],
+      [subCatId, name, slug, desc, numPrice, numStock, unit, min, featured, id],
     );
     return result.affectedRows;
   },

@@ -19,6 +19,10 @@ export const updateProductWithImages = async (productId, formData) => {
     credentials: "include",
     body: formData,
   });
+  if (response.status === 401 || response.status === 403) {
+    window.location.href = "/login";
+    throw new Error("Sesión expirada. Por favor, iniciá sesión nuevamente.");
+  }
   const data = await response.json();
   if (!response.ok) {
     throw new Error(data.message);

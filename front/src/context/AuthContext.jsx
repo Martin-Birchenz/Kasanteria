@@ -31,6 +31,10 @@ export const AuthProvider = ({ children }) => {
           method: "GET",
           credentials: "include",
         });
+        if (res.status === 401 || res.status === 403) {
+          setUser(null);
+          return;
+        }
         console.log("📡 [AuthContext] Status respuesta /verify:", res.status);
         const data = await res.json();
         console.log("📦 [AuthContext] Data recibida de /verify:", data);

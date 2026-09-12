@@ -30,7 +30,7 @@ export const Home = () => {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
-        const [cats, subs, prods] = await Promise.all([
+        const [cats, subs, prods, featured] = await Promise.all([
           getCategories(),
           getSubcategories(),
           getProducts(),

@@ -1,7 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
 import { getProducts, getCategories } from "../services/api.js";
-import ProductCard from "../components/ProductCard.jsx";
-import { Loader } from "../components/Loader.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import "../styles/catalog.css";
 import { Link } from "react-router-dom";
@@ -53,12 +51,13 @@ const Catalog = () => {
           selectedCategory === "all" ||
           String(product.category_id || product.subcategory_id) ===
             String(selectedCategory);
+
         return matchesSearch && matchesCategory;
       })
       .sort((a, b) => {
         if (sortBy === "price-asc") return Number(a.price) - Number(b.price);
         if (sortBy === "price-desc") return Number(b.price) - Number(a.price);
-        return 0;
+        return (b.is_featured || 0) - (a.is_featured || 0);
       });
   }, [products, searchTerm, selectedCategory, sortBy]);
 
@@ -141,10 +140,36 @@ const Catalog = () => {
 
             return (
               <article key={id} className="product-card">
-                <div className="product-image-wrap">
+                <div
+                  className="product-image-wrap"
+                  style={{ position: "relative" }}
+                >
                   <Link to={`/productos/${id}`}>
                     <img src={img} alt={product.name} loading="lazy" />
                   </Link>
+
+                  {product.is_featured === 1 && (
+                    <span
+                      className="badge-featured"
+                      style={{
+                        position: "absolute",
+                        top: "8px",
+                        left: "8px",
+                        backgroundColor: "var(--primary, #a0604a)",
+                        color: "#ffffff",
+                        fontSize: "0.72rem",
+                        fontWeight: "700",
+                        padding: "3px 8px",
+                        borderRadius: "4px",
+                        letterSpacing: "0.03em",
+                        zIndex: 2,
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                      }}
+                    >
+                      Destacado ★
+                    </span>
+                  )}
+
                   {product.stock <= 0 && (
                     <span className="badge-out">Sin Stock</span>
                   )}

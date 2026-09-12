@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
-import { getCategories, getSubcategories, getProducts } from "../services/api";
+import {
+  getCategories,
+  getSubcategories,
+  getProducts,
+  getFeatured,
+} from "../services/api";
 import { Loader } from "../components/Loader.jsx";
 import "../styles/shopFlow.css";
 import heroImage from "../assets/home-image.png";
@@ -14,6 +19,7 @@ export const Home = () => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
+  const [featured, setFeatured] = useState([]);
 
   const [selectedCatId, setSelectedCatId] = useState("all");
   const [selectedSubId, setSelectedSubId] = useState("all");
@@ -28,10 +34,12 @@ export const Home = () => {
           getCategories(),
           getSubcategories(),
           getProducts(),
+          getFeatured(),
         ]);
         setCategories(cats);
         setSubcategories(subs);
         setProducts(prods.filter((p) => p.is_active === 1));
+        setFeatured(featured.filter((p) => p.is_active === 1));
       } catch (error) {
         console.error("Error al obtener los datos iniciales", error);
       } finally {
@@ -116,6 +124,51 @@ export const Home = () => {
           </a>
         </aside>
       </section>
+
+      {featured.length > 0 && (
+        <section className="featured-section" style={{ margin: "2rem 0" }}>
+          <div className="section-editorial-header">
+            <h2>Piezas Destacadas</h2>
+            <span>Selección especial del taller</span>
+          </div>
+          <div className="shop-products-grid">
+            {featured.map((p) => {
+              const id = p.idproducts || p.id;
+              const img = p.image_path
+                ? `${API_URL}${p.image_path}`
+                : "https://placehold.co/400x400/ede4d8/a0604a?text=Punto+%26+Trama";
+
+              return (
+                <article key={`feat-${id}`} className="artisan-product-card">
+                  <div className="card-media">
+                    <Link to={`/productos/${id}`}>
+                      <img src={img} alt={p.name} loading="lazy" />
+                    </Link>
+                  </div>
+                  <div className="card-body">
+                    <Link to={`/productos/${id}`} className="card-title">
+                      {p.name}
+                    </Link>
+                    <div className="card-pricing-block">
+                      <span className="price-main">
+                        ${Number(p.price).toLocaleString("es-AR")}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn-editorial-add"
+                        onClick={() => addToCart(p, 1)}
+                        disabled={p.stock <= 0}
+                      >
+                        Añadir +
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section className="swatch-nav-section">
         <div className="section-editorial-header">

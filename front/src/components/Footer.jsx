@@ -22,8 +22,7 @@ export const Footer = () => {
               aria-label="Instagram"
               className="social-link"
             >
-              <i className="fa-brands fa-instagram"></i>
-              Instagram
+              <i className="fa-brands fa-instagram"></i>('') Instagram
             </a>
             <a
               href="https://facebook.com"
@@ -32,8 +31,7 @@ export const Footer = () => {
               aria-label="Facebook"
               className="social-link"
             >
-              <i className="fa-brands fa-facebook"></i>
-              Facebook
+              <i className="fa-brands fa-facebook"></i>('') Facebook
             </a>
           </div>
         </div>
@@ -61,8 +59,7 @@ export const Footer = () => {
           <ul className="footer-contact">
             <li>📍 Nogoyá, Entre Ríos, Argentina</li>
             <li>
-              <i className="fa-brands fa-whatsapp"></i>
-              WhatsApp:{" "}
+              <i className="fa-brands fa-whatsapp"></i>('') WhatsApp:{" "}
               <a
                 href="https://wa.me/5493435123456"
                 target="_blank"

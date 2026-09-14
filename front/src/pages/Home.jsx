@@ -93,7 +93,7 @@ export const Home = () => {
     <main className="shop-main-container">
       <section className="atelier-hero">
         <div className="hero-manifesto">
-          <span className="hero-tagline">Mercería & Lanas</span>
+          <span className="hero-tagline">Mercería & telas</span>
           <h1 className="hero-title">
             Materia noble para <em>creaciones</em> que perduran.
           </h1>

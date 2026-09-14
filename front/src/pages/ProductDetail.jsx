@@ -21,17 +21,15 @@ export const ProductDetail = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:3000/products/${id}`);
-        if (!res.ok) throw new Error("Error al obtener el producto");
-        const data = await res.json();
+        const data = await getProductById(id);
         setProduct(data);
 
         if (data.images && data.images.length > 0) {
           const primary =
             data.images.find((img) => img.is_primary === 1) || data.images[0];
-          setSelectedImage(`http://localhost:3000${primary.image_path}`);
+          setSelectedImage(`${API_URL}${primary.image_path}`);
         } else if (data.image_path) {
-          setSelectedImage(`http://localhost:3000${data.image_path}`);
+          setSelectedImage(`${API_URL}${data.image_path}`);
         }
       } catch (error) {
         console.error(error);
@@ -42,12 +40,6 @@ export const ProductDetail = () => {
     };
     fetchProduct();
   }, [id]);
-
-  // const currentItem = cart.find(
-  //   (item) => String(item.idproducts || item.id) === String(id),
-  // );
-
-  // const quantityInCart = currentItem ? currentItem.quantity : 0;
 
   const handleAddToCart = async () => {
     if (!product || product.stock <= 0) return;

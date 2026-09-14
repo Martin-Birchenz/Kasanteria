@@ -49,8 +49,7 @@ const Catalog = () => {
             .includes(searchTerm.toLocaleLowerCase());
         const matchesCategory =
           selectedCategory === "all" ||
-          String(product.category_id || product.subcategory_id) ===
-            String(selectedCategory);
+          String(product.category_id) === String(selectedCategory);
 
         return matchesSearch && matchesCategory;
       })

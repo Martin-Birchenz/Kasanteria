@@ -150,7 +150,7 @@ export const AdminSubcategories = () => {
           <div className="card-header-flex">
             <h3>Subcategorías Registradas ({subcategories.length})</h3>
             <button onClick={loadData} className="btn-refresh-sm">
-              🔄 Actualizar
+              Actualizar
             </button>
           </div>
 

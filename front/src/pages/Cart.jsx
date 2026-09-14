@@ -176,7 +176,7 @@ const Cart = () => {
 
   return (
     <main className="cart-page-container">
-      <h1 className="cart-title">Tu Carrito de Compras 🛍️</h1>
+      <h1 className="cart-title">Tu Carrito de Compras</h1>
 
       <div className="cart-grid">
         <section className="cart-items-section">

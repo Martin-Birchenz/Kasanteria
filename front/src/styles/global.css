@@ -51,3 +51,22 @@ img {
   margin: 0 auto;
   width: 90%;
 }
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main,
+.shop-main-container,
+.catalog-container,
+.cart-page-container,
+.product-detail-container {
+  flex: 1 0 auto;
+}
+
+footer {
+  margin-top: auto;
+  flex-shrink: 0;
+}

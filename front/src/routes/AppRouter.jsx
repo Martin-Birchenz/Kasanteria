@@ -12,10 +12,12 @@ import AdminLayout from "../layouts/AdminLayout.jsx";
 import { AdminCategories } from "../pages/admin/AdminCategories.jsx";
 import { AdminSubcategories } from "../pages/admin/AdminSubcategories.jsx";
 import { PaymentStatus } from "../pages/PaymentStatus.jsx";
+import { ScrollToTop } from "../components/ScrollToTop.jsx";
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<PublicLayout />}>
           <Route index element={<Home />} />

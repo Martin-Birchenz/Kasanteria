@@ -94,9 +94,9 @@ export const AdminOrders = () => {
   return (
     <div className="admin-orders-container">
       <div className="orders-header">
-        <h2>Gestión de Pedidos 📋</h2>
+        <h2>Gestión de Pedidos</h2>
         <button className="btn-refresh" onClick={loadOrders}>
-          Actualizar 🔄
+          Actualizar
         </button>
       </div>
 
@@ -130,8 +130,8 @@ export const AdminOrders = () => {
                     <td>{o.customer_name}</td>
                     <td>
                       <div>📞 {o.customer_phone || "Sin teléfono"}</div>
-                      {o.customer_address && <div>📍 {o.customer_address}</div>}
-                      {o.customer_notes && <div>📝 {o.customer_notes}</div>}
+                      {o.customer_address && <div> {o.customer_address}</div>}
+                      {o.customer_notes && <div> {o.customer_notes}</div>}
                     </td>
                     <td>
                       <strong>
@@ -165,7 +165,6 @@ export const AdminOrders = () => {
         </div>
       )}
 
-      {/* Modal de Detalle */}
       {selectedOrder && (
         <div className="modal-overlay" onClick={() => setSelectedOrder(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

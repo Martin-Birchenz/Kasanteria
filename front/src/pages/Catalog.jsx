@@ -188,7 +188,7 @@ const Catalog = () => {
                       onClick={() => addToCart(product)}
                       disabled={product.stock <= 0}
                     >
-                      {product.stock > 0 ? "Agregar 🛒" : "Agotado"}
+                      {product.stock > 0 ? "Agregar" : "Agotado"}
                     </button>
                   </div>
                 </div>

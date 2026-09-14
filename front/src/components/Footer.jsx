@@ -7,9 +7,8 @@ export const Footer = () => {
   return (
     <footer className="main-footer">
       <div className="footer-container">
-        {/* Columna 1: Marca & Propósito */}
         <div className="footer-col brand-col">
-          <h3 className="footer-logo">🧶 Kasantería</h3>
+          <h3 className="footer-logo">Punto & Trama</h3>
           <p className="footer-text">
             Hilados de primera calidad, insumos textiles y mercería creativa
             seleccionados con dedicación para artesanos y amantes de las
@@ -23,7 +22,8 @@ export const Footer = () => {
               aria-label="Instagram"
               className="social-link"
             >
-              📸 Instagram
+              <i className="fa-brands fa-instagram"></i>
+              Instagram
             </a>
             <a
               href="https://facebook.com"
@@ -32,12 +32,12 @@ export const Footer = () => {
               aria-label="Facebook"
               className="social-link"
             >
-              📘 Facebook
+              <i className="fa-brands fa-facebook"></i>
+              Facebook
             </a>
           </div>
         </div>
 
-        {/* Columna 2: Navegación Rápida */}
         <div className="footer-col">
           <h4>Navegación</h4>
           <ul className="footer-links">
@@ -45,24 +45,24 @@ export const Footer = () => {
               <Link to="/">Inicio</Link>
             </li>
             <li>
-              <Link to="/productos">Catálogo de Hilados</Link>
+              <Link to="/productos">Nuestro Catálogo</Link>
             </li>
             <li>
-              <Link to="/carrito">Mi Carrito</Link>
+              <Link to="/carrito">Carrito de compras</Link>
             </li>
             <li>
-              <Link to="/login">Acceso Administrador</Link>
+              <Link to="/login">Acceso para Administradores</Link>
             </li>
           </ul>
         </div>
 
-        {/* Columna 3: Contacto & Atención */}
         <div className="footer-col">
           <h4>Contacto</h4>
           <ul className="footer-contact">
             <li>📍 Nogoyá, Entre Ríos, Argentina</li>
             <li>
-              💬 WhatsApp:{" "}
+              <i className="fa-brands fa-whatsapp"></i>
+              WhatsApp:{" "}
               <a
                 href="https://wa.me/5493435123456"
                 target="_blank"
@@ -72,7 +72,7 @@ export const Footer = () => {
               </a>
             </li>
             <li>✉️ info@kasanteria.com</li>
-            <li>⏰ Lun a Sáb: 09:00 a 19:00 hs</li>
+            <li>🕒 Lun a Sáb: 09:00 a 19:00 hs</li>
           </ul>
         </div>
 
@@ -91,10 +91,9 @@ export const Footer = () => {
         </div>
       </div>
 
-      {/* Barra Inferior de Derechos */}
       <div className="footer-bottom">
         <div className="footer-bottom-container">
-          <p>© {currentYear} Kasantería. Todos los derechos reservados.</p>
+          <p>© {currentYear} Punto & Marca. Todos los derechos reservados.</p>
           <p className="dev-credit">Hecho con dedicación para artesanos.</p>
         </div>
       </div>

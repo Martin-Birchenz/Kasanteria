@@ -65,7 +65,7 @@ export const AdminCategories = () => {
     <div className="admin-cat-container">
       <div className="admin-cat-header">
         <div>
-          <h2>Gestión de Categorías 🏷️</h2>
+          <h2>Gestión de Categorías</h2>
           <p className="admin-cat-subtitle">
             Crea categorías para organizar lanas, hilos, agujas y accesorios.
           </p>
@@ -79,7 +79,6 @@ export const AdminCategories = () => {
       )}
 
       <div className="admin-cat-grid">
-        {/* Formulario de Creación */}
         <section className="admin-card form-card">
           <h3>Nueva Categoría</h3>
           <form onSubmit={handleCreateCategory} className="cat-form">
@@ -95,17 +94,16 @@ export const AdminCategories = () => {
               />
             </div>
             <button type="submit" className="btn-primary" disabled={submitting}>
-              {submitting ? "Creando..." : "➕ Guardar Categoría"}
+              {submitting ? "Creando..." : "Guardar Categoría"}
             </button>
           </form>
         </section>
 
-        {/* Listado de Categorías */}
         <section className="admin-card list-card">
           <div className="card-header-flex">
             <h3>Categorías Existentes ({categories.length})</h3>
             <button onClick={loadCategories} className="btn-refresh-sm">
-              🔄 Actualizar
+              Actualizar
             </button>
           </div>
 

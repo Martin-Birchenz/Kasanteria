@@ -3,7 +3,7 @@ const pool = require("../config/db.js");
 const ProductRepository = {
   getAll: async () => {
     const [rows] = await pool.query(
-      `SELECT p.*, i.image_path, s.name AS subcategory_name, c.name AS category_name
+      `SELECT p.*, i.image_path, s.name AS subcategory_name, s.category_id, c.name AS category_name
        FROM products p 
        LEFT JOIN product_image i ON p.idproducts = i.product_id AND i.is_primary = 1
        LEFT JOIN subcategories s ON p.subcategory_id = s.idsubcategories

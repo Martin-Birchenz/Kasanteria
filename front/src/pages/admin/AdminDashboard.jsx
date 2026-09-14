@@ -223,7 +223,7 @@ export const AdminDashboard = () => {
 
       <div className="admin-grid">
         <section className="admin-card">
-          <h2>{editingId ? "✏️ Editar Producto" : "➕ Nuevo Producto"}</h2>
+          <h2>{editingId ? "Editar Producto" : "Nuevo Producto"}</h2>
           <form className="admin-form" onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Nombre del producto *</label>
@@ -372,8 +372,8 @@ export const AdminDashboard = () => {
                 {submitting
                   ? "Guardando..."
                   : editingId
-                    ? "💾 Guardar Cambios"
-                    : "➕ Publicar Producto"}
+                    ? "Guardar Cambios"
+                    : "Publicar Producto"}
               </button>
               {editingId && (
                 <button
@@ -392,7 +392,7 @@ export const AdminDashboard = () => {
           <div className="card-header-flex">
             <h3>Inventario ({products.length})</h3>
             <button className="btn-refresh-sm" onClick={loadData}>
-              🔄
+              Actualizar
             </button>
           </div>
 
@@ -483,14 +483,14 @@ export const AdminDashboard = () => {
                               onClick={() => handleEditClick(p)}
                               title="Editar producto"
                             >
-                              ✏️
+                              Editar
                             </button>
                             <button
                               className="btn-action-delete"
                               onClick={() => handleDelete(id)}
                               title="Eliminar producto"
                             >
-                              🗑️
+                              Eliminar
                             </button>
                           </div>
                         </td>

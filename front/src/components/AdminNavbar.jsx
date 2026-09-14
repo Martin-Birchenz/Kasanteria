@@ -19,7 +19,7 @@ export const AdminNavbar = () => {
           <div>
             <h1 className="admin-brand-title">Punto y Trama</h1>
             <span className="admin-user-tag">
-              Hola, {user?.name || "Administrador"}
+              {user?.name || "Administrador"}
             </span>
           </div>
         </div>

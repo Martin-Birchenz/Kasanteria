@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext.jsx";
 import "../styles/catalog.css";
 import { Link } from "react-router-dom";
 import { API_URL } from "../services/api.js";
+import { Loader } from "../components/Loader.jsx";
 
 const Catalog = () => {
   const [products, setProducts] = useState([]);
@@ -61,7 +62,7 @@ const Catalog = () => {
   }, [products, searchTerm, selectedCategory, sortBy]);
 
   if (isLoading) {
-    return <h1 className="catalog-status">Cargando...</h1>;
+    return <Loader message="Cargando productos de la tienda..." />;
   }
   if (error) {
     return <h1 className="catalog-error">Error al obtener los productos</h1>;

@@ -14,6 +14,20 @@
   --max-width: 1200px;
 }
 
+html,
+body {
+  height: 100%;
+}
+
+#root > div,
+.app-layout,
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -62,11 +76,18 @@ main,
 .shop-main-container,
 .catalog-container,
 .cart-page-container,
-.product-detail-container {
+.product-detail-container,
+.admin-orders-container,
+.admin-container,
+.app-content,
+.main-content {
   flex: 1 0 auto;
+  width: 100%;
 }
 
-footer {
-  margin-top: auto;
+footer,
+.footer {
+  margin-top: auto !important;
   flex-shrink: 0;
+  width: 100%;
 }

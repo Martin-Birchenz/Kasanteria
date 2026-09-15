@@ -31,7 +31,12 @@ const authController = {
       }
 
       const token = jwt.sign(
-        { id: user.idusers, email: user.email, role: user.role },
+        {
+          id: user.idusers,
+          email: user.email,
+          role: user.role,
+          name: user.name,
+        },
         SECRET_KEY,
         { expiresIn: "7h" },
       );
@@ -103,7 +108,7 @@ const authController = {
           id: decoded.id,
           email: decoded.email,
           role: decoded.role,
-          name: decoded.name || decoded.email.split("@")[0],
+          name: decoded.name || "Administrador",
         },
       });
     } catch (err) {

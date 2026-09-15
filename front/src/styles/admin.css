@@ -12,11 +12,10 @@
 }
 
 .btn-refresh {
-  background: #3b342e;
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid #dfd7cc;
   border-radius: 6px;
+  padding: 0.35rem 0.55rem;
   cursor: pointer;
 }
 

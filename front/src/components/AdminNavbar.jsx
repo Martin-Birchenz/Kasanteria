@@ -73,7 +73,7 @@ export const AdminNavbar = () => {
             Ver Tienda ↗
           </a>
           <button onClick={handleLogout} className="btn-logout">
-            Salir 🚪
+            Salir
           </button>
         </div>
       </div>

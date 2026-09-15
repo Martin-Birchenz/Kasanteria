@@ -98,8 +98,8 @@ export const Home = () => {
             Materia noble para <em>creaciones</em> que perduran.
           </h1>
           <p className="hero-description">
-            Hilados seleccionados, corte de telas por metro y cintería
-            artesanal. Enviamos a todo el país desde nuestro taller.
+            Hilados, corte de telas por medida, y todo en mercería. Enviamos a
+            todo el país desde nuestro negocio.
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export const Home = () => {
         <section className="featured-section" style={{ margin: "2rem 0" }}>
           <div className="section-editorial-header">
             <h2>Piezas Destacadas</h2>
-            <span>Selección especial del taller</span>
+            <span>Selección especial del negocio</span>
           </div>
           <div className="shop-products-grid">
             {featured.map((p) => {

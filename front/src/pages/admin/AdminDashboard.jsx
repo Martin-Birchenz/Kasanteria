@@ -17,7 +17,7 @@ import "../../styles/adminDashboard.css";
 import { API_URL } from "../../services/api.js";
 
 export const AdminDashboard = () => {
-  const { user, token, logout } = useAuth();
+  const { token } = useAuth();
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -51,7 +51,7 @@ export const AdminDashboard = () => {
       setSubcategories(subcategoriesData);
     } catch (error) {
       console.error(error);
-      setError(error);
+      setError(error.message || "Error al cargar los productos");
     } finally {
       setLoading(false);
     }
@@ -219,7 +219,11 @@ export const AdminDashboard = () => {
   return (
     <div className="admin-container">
       {message && <div className="admin-alert success">{message}</div>}
-      {error && <div className="admin-alert danger">{error}</div>}
+      {error && (
+        <div className="admin-alert danger">
+          {typeof error === "string" ? error : error.message}
+        </div>
+      )}
 
       <div className="admin-grid">
         <section className="admin-card">

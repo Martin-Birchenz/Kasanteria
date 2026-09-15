@@ -13,17 +13,25 @@ const ProductRepository = {
     return rows;
   },
   getById: async (id) => {
-    const [row] = await pool.query(
-      "SELECT * FROM products WHERE idproducts = ? AND is_active = 1",
+    const [rows] = await pool.query(
+      `SELECT 
+         p.*, 
+         s.name AS subcategory_name, 
+         s.category_id, 
+         c.name AS category_name
+       FROM products p
+       LEFT JOIN subcategories s ON p.subcategory_id = s.idsubcategories
+       LEFT JOIN categories c ON s.category_id = c.idcategories
+       WHERE p.idproducts = ?`,
       [id],
     );
-    if (row.length === 0) return null;
+    if (rows.length === 0) return null;
 
     const [image] = await pool.query(
       "SELECT idproduct_image, image_path, is_primary FROM product_image WHERE product_id = ?",
       [id],
     );
-    return { ...row[0], images: image };
+    return { ...rows[0], images: image };
   },
   getFeatured: async () => {
     const [rows] = await pool.query(

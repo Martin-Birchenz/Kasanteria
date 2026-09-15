@@ -128,8 +128,9 @@ export const AdminOrders = () => {
                     <td>{o.customer_name}</td>
                     <td>
                       <div>📞 {o.customer_phone || "Sin teléfono"}</div>
+                      📍{" "}
                       {o.customer_address && <div> {o.customer_address}</div>}
-                      {o.customer_notes && <div> {o.customer_notes}</div>}
+                      📝 {o.customer_notes && <div> {o.customer_notes}</div>}
                     </td>
                     <td>
                       <strong>

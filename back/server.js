@@ -18,17 +18,20 @@ const PORT = process.env.PORT;
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "https://punto-y-trama.vercel.app",
   process.env.FRONTEND_URL,
-  "https://punto-y-trama-hm61kimnn-birchenz.vercel.app",
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
         return callback(null, true);
       }
-      return callback(new Error("Not allowed by CORS"));
+
+      return callback(new Error("Bloqueado por política CORS"));
     },
     credentials: true,
   }),

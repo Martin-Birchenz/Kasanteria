@@ -93,7 +93,7 @@ export const AdminOrders = () => {
     <div className="admin-orders-container">
       <div className="orders-header">
         <h2>Gestión de Pedidos</h2>
-        <button className="btn-refresh" onClick={loadOrders}>
+        <button className="btn-refresh-sm" onClick={loadOrders}>
           Actualizar
         </button>
       </div>

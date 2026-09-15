@@ -21,19 +21,6 @@
   font-weight: 700;
 }
 
-.btn-refresh {
-  background: #ffffff;
-  color: #5c4f43;
-  border: 1px solid #dfd7cc;
-  border-radius: 6px;
-  padding: 0.45rem 0.9rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  transition: all 0.15s ease;
-}
-
 .btn-refresh:hover {
   background: #fcf9f5;
   border-color: #c89666;
@@ -44,7 +31,6 @@
   transform: scale(0.97);
 }
 
-/* Tabla de Órdenes */
 .table-responsive {
   width: 100%;
   max-width: 100%;

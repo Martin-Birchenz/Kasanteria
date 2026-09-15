@@ -122,12 +122,23 @@ const ProductRepository = {
     return result.affectedRows;
   },
   deleteProduct: async (id) => {
-    await pool.query("DELETE FROM product_image WHERE product_id = ?", [id]);
-    const [result] = await pool.query(
-      "DELETE FROM products WHERE idproducts = ?",
-      [id],
-    );
-    return result.affectedRows;
+    try {
+      await pool.query("DELETE FROM product_image WHERE product_id = ?", [id]);
+      const [result] = await pool.query(
+        "DELETE FROM products WHERE idproducts = ?",
+        [id],
+      );
+      return { status: "deleted", affectedRows: result.affectedRows };
+    } catch (dbError) {
+      if (dbError.errno === 1451 || dbError.code === "ER_ROW_IS_REFERENCED_2") {
+        await pool.query(
+          "UPDATE products SET is_active = 0 WHERE idproducts = ?",
+          [id],
+        );
+        return { status: "archived" };
+      }
+      throw dbError;
+    }
   },
 };
 

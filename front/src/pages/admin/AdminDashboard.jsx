@@ -129,19 +129,39 @@ export const AdminDashboard = () => {
       );
     } catch (error) {
       console.error(error);
-      setError(error);
+      setError(error.message || "Error al eliminar el producto");
     }
   };
 
   const handleDelete = async (productId) => {
-    if (!window.confirm("¿Estás seguro de que quieres eliminar este producto?"))
+    if (
+      !window.confirm("¿Estás seguro de que quieres eliminar este producto?")
+    ) {
       return;
+    }
+
+    setError(null);
+    setMessage(null);
+
     try {
-      await deleteProduct(productId, token);
-      setProducts((prev) => prev.filter((p) => p.idproducts !== productId));
+      const response = await deleteProduct(productId, token);
+
+      if (response?.archived) {
+        setProducts((prev) =>
+          prev.map((p) =>
+            (p.idproducts || p.id) === productId ? { ...p, is_active: 0 } : p,
+          ),
+        );
+        setMessage(response.message);
+      } else {
+        setProducts((prev) =>
+          prev.filter((p) => (p.idproducts || p.id) !== productId),
+        );
+        setMessage(response?.message || "Producto eliminado con éxito");
+      }
     } catch (error) {
       console.error(error);
-      setError(error);
+      setError(error.message || "Error al procesar la eliminación");
     }
   };
 
@@ -212,7 +232,7 @@ export const AdminDashboard = () => {
       );
     } catch (error) {
       console.error(error);
-      setError(error);
+      setError(error.message || "Error al eliminar el producto");
     }
   };
 

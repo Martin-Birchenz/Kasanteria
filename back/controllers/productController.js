@@ -76,9 +76,22 @@ const ProductController = {
   deleteProduct: async (req, res) => {
     try {
       const { id } = req.params;
-      await ProductRepository.deleteProduct(id);
-      res.status(200).json({ message: "Producto eliminado con éxito" });
+      const result = await ProductRepository.deleteProduct(id);
+
+      if (result.status === "archived") {
+        return res.status(200).json({
+          archived: true,
+          message:
+            "El producto tiene órdenes asociadas. Se pausó y ocultó de la tienda para preservar el historial.",
+        });
+      }
+
+      res.status(200).json({
+        archived: false,
+        message: "Producto eliminado definitivamente de la base de datos.",
+      });
     } catch (error) {
+      console.error("Error al eliminar producto:", error);
       res.status(500).json({ error: error.message });
     }
   },

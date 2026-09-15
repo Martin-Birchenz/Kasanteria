@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Loader } from "../../components/Loader.jsx";
 import "../../styles/adminSubcategories.css";
+import { API_URL } from "../../services/api.js";
 
 export const AdminSubcategories = () => {
   const [subcategories, setSubcategories] = useState([]);
@@ -16,8 +17,8 @@ export const AdminSubcategories = () => {
     try {
       setLoading(true);
       const [resCats, resSubs] = await Promise.all([
-        fetch("http://localhost:3000/categories"),
-        fetch("http://localhost:3000/subcategories"),
+        fetch(`${API_URL}/categories`),
+        fetch(`${API_URL}/subcategories`),
       ]);
 
       if (resCats.ok && resSubs.ok) {
@@ -46,7 +47,7 @@ export const AdminSubcategories = () => {
     setFeedback({ message: "", type: "" });
 
     try {
-      const res = await fetch("http://localhost:3000/subcategories", {
+      const res = await fetch(`${API_URL}/subcategories`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -145,7 +146,6 @@ export const AdminSubcategories = () => {
           </form>
         </section>
 
-        {/* Listado */}
         <section className="admin-card list-card">
           <div className="card-header-flex">
             <h3>Subcategorías Registradas ({subcategories.length})</h3>

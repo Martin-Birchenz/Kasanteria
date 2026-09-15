@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Loader } from "../../components/Loader.jsx";
 import "../../styles/admin.css";
+import { API_URL } from "../../services/api.js";
 
 export const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -11,7 +12,7 @@ export const AdminOrders = () => {
   const loadOrders = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/orders", {
+      const res = await fetch(`${API_URL}/orders`, {
         credentials: "include",
       });
       if (res.ok) {
@@ -31,17 +32,14 @@ export const AdminOrders = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      const res = await fetch(
-        `http://localhost:3000/orders/${orderId}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ status: newStatus }),
+      const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        credentials: "include",
+        body: JSON.stringify({ status: newStatus }),
+      });
       if (res.ok) {
         setOrders((prev) =>
           prev.map((o) =>
@@ -63,7 +61,7 @@ export const AdminOrders = () => {
   const openDetail = async (orderId) => {
     try {
       setModalLoading(true);
-      const res = await fetch(`http://localhost:3000/orders/${orderId}`, {
+      const res = await fetch(`${API_URL}/orders/${orderId}`, {
         credentials: "include",
       });
       if (res.ok) {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Loader } from "../../components/Loader.jsx";
 import "../../styles/adminCategories.css";
+import { API_URL } from "../../services/api.js";
 
 export const AdminCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -35,7 +36,7 @@ export const AdminCategories = () => {
     setFeedback({ message: "", type: "" });
 
     try {
-      const res = await fetch("http://localhost:3000/categories", {
+      const res = await fetch(`${API_URL}/categories`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

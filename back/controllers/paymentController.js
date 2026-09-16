@@ -64,14 +64,11 @@ const PaymentController = {
             failure: "http://localhost:5173/pago/fallido",
             pending: "http://localhost:5173/pago/pendiente",
           },
-          // auto_return: "approved",
-          // notification_url: `${process.env.BACKEND_URL || "https://tu-dominio-ngrok.app"}/payments/webhook`,
         },
       });
 
       return res.status(200).json({ init_point: response.init_point, orderId });
     } catch (error) {
-      console.error("💥 [MercadoPago Error]:", error);
       return res.status(500).json({ error: error.message });
     }
   },
@@ -97,7 +94,6 @@ const PaymentController = {
 
       return res.status(200).send("OK");
     } catch (error) {
-      console.error("💥 [MercadoPago Webhook Error]:", error);
       return res.status(500).send("Error");
     }
   },

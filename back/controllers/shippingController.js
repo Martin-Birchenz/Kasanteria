@@ -4,7 +4,7 @@ const ShippingController = {
   calculate: async (req, res) => {
     try {
       const { cp } = req.body;
-      if (!cp || isNan(cp)) {
+      if (!cp || isNaN(cp)) {
         return res
           .status(400)
           .json({ message: "El código postal es obligatorio" });

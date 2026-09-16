@@ -9,7 +9,6 @@ const authController = {
       const { email, password } = req.body;
 
       const user = await userRepository.findByEmail(email);
-      console.log("👤 Usuario encontrado en DB:", user);
 
       if (!user) {
         return res.status(401).json({ message: "Datos de acceso incorrectos" });

@@ -91,7 +91,6 @@ const ProductController = {
         message: "Producto eliminado definitivamente de la base de datos.",
       });
     } catch (error) {
-      console.error("Error al eliminar producto:", error);
       res.status(500).json({ error: error.message });
     }
   },

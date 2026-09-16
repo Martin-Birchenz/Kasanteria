@@ -8,7 +8,7 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   port: Number(process.env.DB_PORT),
   ssl: {
-    rejectUnauthorized: false, // Clave para que Aiven acepte la conexión desde Node en la nube
+    rejectUnauthorized: false,
   },
   waitForConnections: true,
   connectionLimit: 10,

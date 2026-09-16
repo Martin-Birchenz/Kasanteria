@@ -195,6 +195,8 @@ export const AdminDashboard = () => {
       formData.append("price", price);
       formData.append("stock", stock);
       formData.append("subcategory_id", subcategoryId);
+      formData.append("unit_type", unitType);
+      formData.append("min_stock", minStock);
 
       images.forEach((file) => {
         formData.append("images", file);
@@ -238,10 +240,55 @@ export const AdminDashboard = () => {
 
   return (
     <div className="admin-container">
-      {message && <div className="admin-alert success">{message}</div>}
+      {message && (
+        <div
+          className="admin-alert success"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span>{message}</span>
+          <button
+            type="button"
+            onClick={() => setMessage(null)}
+            style={{
+              background: "transparent",
+              border: "none",
+              fontWeight: "700",
+              cursor: "pointer",
+              color: "inherit",
+            }}
+          >
+            Entendido ✕
+          </button>
+        </div>
+      )}
+
       {error && (
-        <div className="admin-alert danger">
-          {typeof error === "string" ? error : error.message}
+        <div
+          className="admin-alert danger"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span>{typeof error === "string" ? error : error.message}</span>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            style={{
+              background: "transparent",
+              border: "none",
+              fontWeight: "700",
+              cursor: "pointer",
+              color: "inherit",
+            }}
+          >
+            Entendido ✕
+          </button>
         </div>
       )}
 

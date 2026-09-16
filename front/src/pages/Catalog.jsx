@@ -22,14 +22,20 @@ const Catalog = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
+
         const [productsData, categoriesData] = await Promise.all([
           getProducts(),
           getCategories().catch(() => []),
         ]);
+
+        const visibleProducts = (productsData || []).filter(
+          (product) => Number(product.is_active) === 1,
+        );
+
         setProducts(productsData || []);
         setCategories(categoriesData || []);
       } catch (error) {
-        setError(error);
+        setError(error.message || "Error al cargar los productos");
       } finally {
         setIsLoading(false);
       }

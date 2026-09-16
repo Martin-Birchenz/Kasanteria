@@ -7,27 +7,18 @@ const authController = {
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
-      console.log("➡️ Intento de login con email:", email);
 
       const user = await userRepository.findByEmail(email);
       console.log("👤 Usuario encontrado en DB:", user);
 
       if (!user) {
-        console.log(
-          "❌ No se encontró ningún usuario con ese email en la tabla users",
-        );
-        return res.status(401).json({ message: "User not found" });
+        return res.status(401).json({ message: "Datos de acceso incorrectos" });
       }
 
-      console.log("🔑 Password recibida:", password);
-      console.log("🔒 Password hasheada en DB:", user.password);
-
       const validPassword = await bcrypt.compare(password, user.password);
-      console.log("⚖️ ¿Contraseña válida?:", validPassword);
 
       if (!validPassword) {
-        console.log("❌ La contraseña no coincide con el hash");
-        return res.status(401).json({ message: "Invalid password" });
+        return res.status(401).json({ message: "Datos de acceso incorrectos" });
       }
 
       const token = jwt.sign(
@@ -59,7 +50,6 @@ const authController = {
         },
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ message: "Internal server error" });
     }
   },
@@ -76,7 +66,6 @@ const authController = {
         .status(201)
         .json({ message: "User created successfully", userId });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ message: "Internal server error" });
     }
   },
@@ -88,21 +77,13 @@ const authController = {
     const token =
       req.cookies?.puntoytrama || req.headers["authorization"]?.split(" ")[1];
 
-    console.log(
-      "🍪 [Backend verifySession] Cookie recibida:",
-      token ? "Existe Token" : "NO hay token",
-    );
-
     if (!token) {
       return res.status(200).json({ authenticated: false, user: null });
     }
 
     try {
       const decoded = jwt.verify(token, SECRET_KEY);
-      console.log(
-        "👤 [Backend verifySession] Token decodificado con éxito:",
-        decoded,
-      );
+
       return res.status(200).json({
         user: {
           id: decoded.id,
@@ -112,10 +93,7 @@ const authController = {
         },
       });
     } catch (err) {
-      console.error(
-        "❌ [Backend verifySession] Error al verificar token JWT:",
-        err.message,
-      );
+      console.error(err.message);
       return res.status(200).json({ authenticated: false, user: null });
     }
   },

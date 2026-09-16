@@ -32,7 +32,7 @@ const Catalog = () => {
           (product) => Number(product.is_active) === 1,
         );
 
-        setProducts(productsData || []);
+        setProducts(visibleProducts);
         setCategories(categoriesData || []);
       } catch (error) {
         setError(error.message || "Error al cargar los productos");

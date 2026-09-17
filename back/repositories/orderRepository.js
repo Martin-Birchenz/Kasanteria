@@ -10,17 +10,6 @@ const OrderRepository = {
     items,
     payment_method = "whatsapp",
   }) => {
-    console.log("🛒 [OrderRepo] Iniciando creación de orden...");
-    console.log("👤 [OrderRepo] Datos cliente:", {
-      customer_name,
-      customer_phone,
-      customer_address,
-      customer_notes,
-      total_price,
-      items,
-      payment_method,
-    });
-    console.log("📦 [OrderRepo] Items:", items);
     const connection = await pool.getConnection();
 
     try {
@@ -34,27 +23,22 @@ const OrderRepository = {
       const orderNumber = `ORD-${Date.now().toString().slice(-6)}`;
       const paymentMethod = payment_method || "whatsapp";
 
-      console.log("➡️ [OrderRepo] Ejecutando INSERT en orders...");
       const [orderResult] = await connection.query(
         "INSERT INTO orders (order_number, customer_name, customer_phone, customer_address, customer_notes, total_amount, status, payment_method) VALUES (?, ?, ?, ?, ?, ?, 'pendiente', ?)",
         [orderNumber, name, phone, address, notes, total, paymentMethod],
       );
       const orderId = orderResult.insertId;
-      console.log("✅ [OrderRepo] Orden insertada con ID:", orderId);
+
       for (const item of items) {
         const prodId = item.idproducts || item.id;
         const qty = Number(item.quantity) || 1;
         const price = Number(item.price) || 0;
-        console.log(
-          `➡️ [OrderRepo] Insertando item - Producto ID: ${prodId}, Cantidad: ${qty}, Precio: ${price}`,
-        );
+
         await connection.query(
           "INSERT INTO order_items (oi_order_id, oi_product_id, quantity, price_at_purchase) VALUES (?, ?, ?, ?)",
           [orderId, prodId, qty, price],
         );
-        console.log(
-          `➡️ [OrderRepo] Actualizando stock del producto ${prodId}...`,
-        );
+
         if (paymentMethod === "whatsapp") {
           await connection.query(
             "UPDATE products SET stock = GREATEST(0, stock - ?) WHERE idproducts = ?",
@@ -78,10 +62,9 @@ const OrderRepository = {
       const [rows] = await pool.query(
         "SELECT * FROM orders ORDER BY idorders DESC",
       );
-      console.log(`📋 [OrderRepo] Obtenidas ${rows.length} órdenes.`);
+
       return rows;
     } catch (error) {
-      console.error("💥 [OrderRepo ERROR SQL DETALLADO]:", error);
       throw error;
     }
   },

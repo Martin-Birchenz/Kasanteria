@@ -47,11 +47,11 @@ const OrderRepository = {
         }
       }
       await connection.commit();
-      console.log("🎉 [OrderRepo] Transacción completada con éxito!");
+
       return orderId;
     } catch (error) {
       await connection.rollback();
-      console.error("💥 [OrderRepo ERROR SQL DETALLADO]:", error);
+
       throw error;
     } finally {
       connection.release();

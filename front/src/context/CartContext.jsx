@@ -63,19 +63,6 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // const decreaseQuantity = (productId) => {
-  //   setCart((prevCart) => {
-  //     return prevCart
-  //       .map((item) => {
-  //         if ((item.idproducts || item.id) === productId) {
-  //           return { ...item, quantity: item.quantity - 1 };
-  //         }
-  //         return item;
-  //       })
-  //       .filter((item) => item.quantity > 0);
-  //   });
-  // };
-
   const updateQuantity = (itemKey, newQuantity) => {
     const qty = Number(newQuantity);
     if (qty <= 0) {

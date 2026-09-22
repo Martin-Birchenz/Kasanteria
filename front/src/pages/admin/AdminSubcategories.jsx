@@ -7,6 +7,8 @@ export const AdminSubcategories = () => {
   const [subcategories, setSubcategories] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
 
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [subcategoryName, setSubcategoryName] = useState("");
@@ -37,6 +39,13 @@ export const AdminSubcategories = () => {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const handleCreate = async (event) => {
     event.preventDefault();
@@ -85,6 +94,58 @@ export const AdminSubcategories = () => {
 
   return (
     <div className="admin-subcat-container">
+      {message && (
+        <div
+          className="admin-alert success"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span>{message}</span>
+          <button
+            type="button"
+            onClick={() => setMessage(null)}
+            style={{
+              background: "transparent",
+              border: "none",
+              fontWeight: "700",
+              cursor: "pointer",
+              color: "inherit",
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {error && (
+        <div
+          className="admin-alert danger"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span>{typeof error === "string" ? error : error.message}</span>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            style={{
+              background: "transparent",
+              border: "none",
+              fontWeight: "700",
+              cursor: "pointer",
+              color: "inherit",
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <div className="admin-subcat-header">
         <h2>Gestión de Subcategorías</h2>
         <p className="admin-subcat-subtitle">

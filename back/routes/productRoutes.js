@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const productController = require("../controllers/productController.js");
-const upload = require("../middlewares/upload.js");
+const upload = require("../config/cloudinary.js").upload;
 const { verifyToken } = require("../middlewares/authMiddleware.js");
 
 router.get("/", productController.getProduct);

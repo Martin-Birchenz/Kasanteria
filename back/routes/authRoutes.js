@@ -1,6 +1,4 @@
-const express = require("express");
 const authController = require("../controllers/authController.js");
-const { verifyToken } = require("../middlewares/authMiddleware.js");
 const router = require("express").Router();
 
 router.post("/login", authController.login);

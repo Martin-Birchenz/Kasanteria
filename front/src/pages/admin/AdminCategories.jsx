@@ -9,6 +9,8 @@ export const AdminCategories = () => {
   const [newCatName, setNewCatName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState({ message: "", type: "" });
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
 
   const loadCategories = async () => {
     try {
@@ -28,6 +30,13 @@ export const AdminCategories = () => {
   useEffect(() => {
     loadCategories();
   }, []);
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const handleCreateCategory = async (event) => {
     event.preventDefault();
@@ -64,6 +73,58 @@ export const AdminCategories = () => {
 
   return (
     <div className="admin-cat-container">
+      {message && (
+        <div
+          className="admin-alert success"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span>{message}</span>
+          <button
+            type="button"
+            onClick={() => setMessage(null)}
+            style={{
+              background: "transparent",
+              border: "none",
+              fontWeight: "700",
+              cursor: "pointer",
+              color: "inherit",
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {error && (
+        <div
+          className="admin-alert danger"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span>{typeof error === "string" ? error : error.message}</span>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            style={{
+              background: "transparent",
+              border: "none",
+              fontWeight: "700",
+              cursor: "pointer",
+              color: "inherit",
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <div className="admin-cat-header">
         <div>
           <h2>Gestión de Categorías</h2>

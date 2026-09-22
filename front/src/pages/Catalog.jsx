@@ -6,6 +6,12 @@ import { Link } from "react-router-dom";
 import { API_URL } from "../services/api.js";
 import { Loader } from "../components/Loader.jsx";
 
+const resolveImageUrl = (path) => {
+  if (!path)
+    return "https://placehold.co/400x400/ede4d8/a0604a?text=Punto+%26+Trama";
+  return path.startsWith("http") ? path : `${API_URL}${path}`;
+};
+
 const Catalog = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -140,9 +146,7 @@ const Catalog = () => {
         <div className="products-grid">
           {filteredProducts.map((product) => {
             const id = product.idproducts || product.id;
-            const img = product.image_path
-              ? `${API_URL}${product.image_path}`
-              : "https://placehold.co/400x400/ede4d8/a0604a?text=Punto+%26+Trama";
+            const img = resolveImageUrl(product.image_path);
 
             return (
               <article key={id} className="product-card">

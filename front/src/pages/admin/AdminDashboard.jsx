@@ -16,6 +16,12 @@ import { Loader } from "../../components/Loader.jsx";
 import "../../styles/adminDashboard.css";
 import { API_URL } from "../../services/api.js";
 
+const resolveImageUrl = (path) => {
+  if (!path)
+    return "https://placehold.co/400x400/ede4d8/a0604a?text=Punto+%26+Trama";
+  return path.startsWith("http") ? path : `${API_URL}${path}`;
+};
+
 export const AdminDashboard = () => {
   const { token } = useAuth();
 
@@ -169,6 +175,13 @@ export const AdminDashboard = () => {
     loadData();
   }, []);
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   const handleImageChange = (event) => {
     const files = Array.from(event.target.files);
     setImages(files);
@@ -261,7 +274,7 @@ export const AdminDashboard = () => {
               color: "inherit",
             }}
           >
-            Entendido ✕
+            ✕
           </button>
         </div>
       )}
@@ -287,7 +300,7 @@ export const AdminDashboard = () => {
               color: "inherit",
             }}
           >
-            Entendido ✕
+            ✕
           </button>
         </div>
       )}
@@ -486,9 +499,7 @@ export const AdminDashboard = () => {
                 <tbody>
                   {products.map((p) => {
                     const id = p.idproducts || p.id;
-                    const img = p.image_path
-                      ? `${API_URL}${p.image_path}`
-                      : "https://placehold.co/50x50?text=P&T";
+                    const img = resolveImageUrl(p.image_path);
                     const isLowStock =
                       Number(p.stock) <= Number(p.min_stock || 5);
 

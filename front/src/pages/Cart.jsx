@@ -4,6 +4,12 @@ import { useState } from "react";
 import { API_URL } from "../services/api.js";
 import "../styles/cart.css";
 
+const resolveImageUrl = (path) => {
+  if (!path)
+    return "https://placehold.co/400x400/ede4d8/a0604a?text=Punto+%26+Trama";
+  return path.startsWith("http") ? path : `${API_URL}${path}`;
+};
+
 const Cart = () => {
   const { cart, updateQuantity, removeFromCart, clearCart, totalPrice } =
     useCart();
@@ -193,9 +199,7 @@ const Cart = () => {
 
           <div className="cart-items-list">
             {cart.map((item) => {
-              const img = item.image_path
-                ? `${API_URL}${item.image_path}`
-                : "https://placehold.co/80x80/ede4d8/a0604a?text=P&T";
+              const img = resolveImageUrl(item.image_path);
 
               return (
                 <article key={item.itemKey} className="cart-item-card">

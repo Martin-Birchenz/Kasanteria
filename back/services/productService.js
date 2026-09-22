@@ -25,7 +25,7 @@ const ProductService = {
 
     if (files && files.length > 0) {
       for (let i = 0; i < files.length; i++) {
-        const imagePath = `/uploads/${files[i].filename}`;
+        const imagePath = files[i].path;
         const isPrimary = i === 0 ? 1 : 0;
         await ProductRepository.addImage(productId, imagePath, isPrimary);
       }
@@ -44,9 +44,15 @@ const ProductService = {
     });
 
     if (files && files.length > 0) {
+      const currentProduct = await ProductRepository.getById(id);
+      const hasPrimaryImage = currentProduct?.images?.some(
+        (img) => img.is_primary === 1,
+      );
+
       for (let i = 0; i < files.length; i++) {
-        const imagePath = `/uploads/${files[i].filename}`;
-        await ProductRepository.addImage(id, imagePath, 0);
+        const imagePath = files[i].path;
+        const isPrimary = !hasPrimaryImage && i === 0 ? 1 : 0;
+        await ProductRepository.addImage(id, imagePath, isPrimary);
       }
     }
 

@@ -12,6 +12,12 @@ import "../styles/shopFlow.css";
 import heroImage from "../assets/home-image.png";
 import { API_URL } from "../services/api.js";
 
+const resolveImageUrl = (path) => {
+  if (!path)
+    return "https://placehold.co/400x400/ede4d8/a0604a?text=Punto+%26+Trama";
+  return path.startsWith("http") ? path : `${API_URL}${path}`;
+};
+
 export const Home = () => {
   const { addToCart } = useCart();
   const [loading, setLoading] = useState(true);
@@ -134,9 +140,7 @@ export const Home = () => {
           <div className="shop-products-grid">
             {featured.map((p) => {
               const id = p.idproducts || p.id;
-              const img = p.image_path
-                ? `${API_URL}${p.image_path}`
-                : "https://placehold.co/400x400/ede4d8/a0604a?text=Punto+%26+Trama";
+              const img = resolveImageUrl(p.image_path);
 
               return (
                 <article key={`feat-${id}`} className="artisan-product-card">
@@ -260,9 +264,7 @@ export const Home = () => {
       <section className="shop-products-grid">
         {filteredProducts.map((p) => {
           const id = p.idproducts || p.id;
-          const img = p.image_path
-            ? `${API_URL}${p.image_path}`
-            : "https://placehold.co/400x400/ede4d8/a0604a?text=Punto+%26+Trama";
+          const img = resolveImageUrl(p.image_path);
 
           return (
             <article key={id} className="artisan-product-card">

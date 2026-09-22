@@ -7,21 +7,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const [loading, setLoading] = useState(true);
-  //   try {
-  //     const savedUser = localStorage.getItem("kasanteria-user");
-  //     if (savedUser && token) {
-  //       setUser(JSON.parse(savedUser));
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, [token]);
 
   useEffect(() => {
     const checkSession = async () => {
-      console.log("🔍 [AuthContext] Ejecutando checkSession...");
       try {
         const res = await fetch(`${API_URL}/auth/verify`, {
           method: "GET",
@@ -31,11 +19,10 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
           return;
         }
-        console.log("📡 [AuthContext] Status respuesta /verify:", res.status);
+
         const data = await res.json();
-        console.log("📦 [AuthContext] Data recibida de /verify:", data);
+
         if (data.user) {
-          console.log("✅ [AuthContext] Usuario autenticado:", data.user);
           setUser(data.user);
         } else {
           setUser(null);

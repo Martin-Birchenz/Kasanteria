@@ -5,6 +5,13 @@ import { Loader } from "../components/Loader.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import "../styles/productDetail.css";
 import { API_URL } from "../services/api.js";
+
+const resolveImageUrl = (path) => {
+  if (!path)
+    return "https://placehold.co/500x500/ede4d8/a0604a?text=Punto+%26+Trama";
+  return path.startsWith("http") ? path : `${API_URL}${path}`;
+};
+
 export const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
@@ -27,9 +34,9 @@ export const ProductDetail = () => {
         if (data.images && data.images.length > 0) {
           const primary =
             data.images.find((img) => img.is_primary === 1) || data.images[0];
-          setSelectedImage(`${API_URL}${primary.image_path}`);
+          setSelectedImage(resolveImageUrl(primary.image_path));
         } else if (data.image_path) {
-          setSelectedImage(`${API_URL}${data.image_path}`);
+          setSelectedImage(resolveImageUrl(data.image_path));
         }
       } catch (error) {
         console.error(error);
@@ -40,13 +47,6 @@ export const ProductDetail = () => {
     };
     fetchProduct();
   }, [id]);
-
-  const handleAddToCart = async () => {
-    if (!product || product.stock <= 0) return;
-    addToCart(product, quantity);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
-  };
 
   if (loading)
     return (
@@ -88,12 +88,6 @@ export const ProductDetail = () => {
 
   const isLowStock = product.stock <= (product.min_stock || 5);
 
-  const mainImageUrl = selectedImage
-    ? `${API_URL}${selectedImage}`
-    : "https://placehold.co/400x400/e2e8f0/475569?text=Kasanteria";
-
-  const maxStock = Number(product.stock) || 99;
-
   return (
     <main className="product-detail-container">
       <nav className="breadcrumb-nav">
@@ -119,7 +113,7 @@ export const ProductDetail = () => {
           {product.images && product.images.length > 1 && (
             <div className="thumbnails-track">
               {product.images.map((img) => {
-                const fullUrl = `${API_URL}${img.image_path}`;
+                const fullUrl = resolveImageUrl(img.image_path);
                 return (
                   <button
                     key={img.idproduct_image}

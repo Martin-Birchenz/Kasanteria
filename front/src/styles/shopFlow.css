@@ -259,11 +259,47 @@
   color: #ffffff;
 }
 
-/* Responsividad */
 @media (max-width: 980px) {
   .atelier-hero {
     grid-template-columns: 1fr;
     gap: 2rem;
     padding: 2rem 0;
+  }
+}
+
+.hero-thread-weave {
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  display: block;
+}
+
+.hero-thread-weave .thread {
+  stroke-dasharray: 12 8;
+  animation: hero-thread-flow 6s linear infinite;
+}
+
+.hero-thread-weave .thread-2 {
+  animation-duration: 7.5s;
+  animation-direction: reverse;
+}
+
+.hero-thread-weave .thread-3 {
+  animation-duration: 5s;
+}
+
+.hero-thread-weave .thread-spool {
+  opacity: 0.9;
+}
+
+@keyframes hero-thread-flow {
+  to {
+    stroke-dashoffset: -200;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-thread-weave .thread {
+    animation: none;
   }
 }

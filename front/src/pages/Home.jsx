@@ -9,7 +9,6 @@ import {
 } from "../services/api";
 import { Loader } from "../components/Loader.jsx";
 import "../styles/shopFlow.css";
-import heroImage from "../assets/home-image.png";
 import { API_URL } from "../services/api.js";
 
 const resolveImageUrl = (path) => {
@@ -110,7 +109,45 @@ export const Home = () => {
         </div>
 
         <div className="hero-media-frame">
-          <img src={heroImage} alt="Detalle de hilados en taller" />
+          <svg
+            className="hero-thread-weave"
+            viewBox="0 0 240 400"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Ilustración de hilos entrelazados"
+          >
+            <path
+              className="thread thread-1"
+              d="M 40 0 C 120 60, 20 140, 100 200 C 180 260, 60 320, 140 400"
+              fill="none"
+              stroke="var(--primary)"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            <path
+              className="thread thread-2"
+              d="M 90 0 C 30 80, 160 120, 90 200 C 20 280, 150 300, 90 400"
+              fill="none"
+              stroke="var(--primary-light)"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            <path
+              className="thread thread-3"
+              d="M 160 0 C 200 90, 100 150, 170 220 C 240 290, 130 330, 180 400"
+              fill="none"
+              stroke="var(--secondary)"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            <circle
+              className="thread-spool"
+              cx="120"
+              cy="200"
+              r="14"
+              fill="var(--secondary-dark)"
+            />
+          </svg>
         </div>
 
         <aside className="hero-workshop-card">

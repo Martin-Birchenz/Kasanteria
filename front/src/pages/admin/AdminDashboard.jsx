@@ -216,7 +216,7 @@ export const AdminDashboard = () => {
       });
 
       if (editingId) {
-        await updateProductWithImages(editingId, formData, token);
+        await updateProductWithImages(editingId, formData);
         setMessage("Producto actualizado exitosamente");
       } else {
         await createProductWithImages(formData, token);
@@ -235,7 +235,7 @@ export const AdminDashboard = () => {
 
   const handleToggleFeatured = async (productId, currentFeatured) => {
     try {
-      await toggleFeaturedStatus(productId, currentFeatured, token);
+      await toggleFeaturedStatus(productId, currentFeatured);
       setProducts((prev) =>
         prev.map((p) => {
           const id = p.idproducts || p.id;

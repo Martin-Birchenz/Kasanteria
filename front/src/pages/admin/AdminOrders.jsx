@@ -14,7 +14,7 @@ export const AdminOrders = () => {
   const loadOrders = async () => {
     try {
       setLoading(true);
-      const res = await authFetch("/orders", {
+      const res = await fetch(`${API_URL}/orders`, {
         credentials: "include",
       });
       if (res.ok) {
@@ -41,7 +41,7 @@ export const AdminOrders = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      const res = await authFetch(`$/orders/${orderId}/status`, {
+      const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export const AdminOrders = () => {
   const openDetail = async (orderId) => {
     try {
       setModalLoading(true);
-      const res = await authFetch(`/orders/${orderId}`, {
+      const res = await fetch(`${API_URL}/orders/${orderId}`, {
         credentials: "include",
       });
       if (res.ok) {

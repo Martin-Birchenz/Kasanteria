@@ -1,8 +1,10 @@
 import { API_URL } from "../services/api.js";
 
 export const createProductWithImages = async (formData, token) => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await fetch(`${API_URL}/products`, {
     method: "POST",
+    headers,
     credentials: "include",
     body: formData,
   });
@@ -14,8 +16,10 @@ export const createProductWithImages = async (formData, token) => {
 };
 
 export const updateProductWithImages = async (productId, formData) => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await fetch(`${API_URL}/products/${productId}`, {
     method: "PUT",
+    headers,
     credentials: "include",
     body: formData,
   });
@@ -31,11 +35,10 @@ export const updateProductWithImages = async (productId, formData) => {
 };
 
 export const toggleProductsStatus = async (productId, currentStatus, token) => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await fetch(`${API_URL}/products/${productId}/status`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     credentials: "include",
     body: JSON.stringify({ is_active: currentStatus === 1 ? 0 : 1 }),
   });
@@ -48,11 +51,10 @@ export const toggleProductsStatus = async (productId, currentStatus, token) => {
 };
 
 export const toggleFeaturedStatus = async (productId, currentFeatured) => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await fetch(`${API_URL}/products/${productId}/featured`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     credentials: "include",
     body: JSON.stringify({ is_featured: currentFeatured === 1 ? 0 : 1 }),
   });
@@ -64,8 +66,10 @@ export const toggleFeaturedStatus = async (productId, currentFeatured) => {
 };
 
 export const deleteProduct = async (productId, token) => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await fetch(`${API_URL}/products/${productId}`, {
     method: "DELETE",
+    headers,
     credentials: "include",
   });
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Loader } from "../../components/Loader.jsx";
 import "../../styles/admin.css";
 import { API_URL } from "../../services/api.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -11,10 +12,16 @@ export const AdminOrders = () => {
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
 
+  const { token } = useAuth();
+
   const loadOrders = async () => {
     try {
       setLoading(true);
+
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
       const res = await fetch(`${API_URL}/orders`, {
+        headers,
         credentials: "include",
       });
       if (res.ok) {
@@ -41,11 +48,14 @@ export const AdminOrders = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
+      const headers = {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      };
+
       const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         credentials: "include",
         body: JSON.stringify({ status: newStatus }),
       });
@@ -70,7 +80,9 @@ export const AdminOrders = () => {
   const openDetail = async (orderId) => {
     try {
       setModalLoading(true);
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const res = await fetch(`${API_URL}/orders/${orderId}`, {
+        headers,
         credentials: "include",
       });
       if (res.ok) {

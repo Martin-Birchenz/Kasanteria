@@ -5,18 +5,28 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-
+  const [token, setToken] = useState(
+    () => localStorage.getItem("token") || null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkSession = async () => {
       try {
+        const storedToken = localStorage.getItem("token");
+        const headers = storedToken
+          ? { Authorization: `Bearer ${storedToken}` }
+          : {};
+
         const res = await fetch(`${API_URL}/auth/verify`, {
           method: "GET",
+          headers,
           credentials: "include",
         });
         if (res.status === 401 || res.status === 403) {
           setUser(null);
+          setToken(null);
+          localStorage.removeItem("token");
           return;
         }
 
@@ -25,7 +35,9 @@ export const AuthProvider = ({ children }) => {
         if (data.user) {
           setUser(data.user);
         } else {
+          setToken(null);
           setUser(null);
+          localStorage.removeItem("token");
         }
       } catch (error) {
         console.error(error);
@@ -37,8 +49,12 @@ export const AuthProvider = ({ children }) => {
     checkSession();
   }, []);
 
-  const login = async (userData, token) => {
+  const login = async (userData, receivedToken) => {
     setUser(userData);
+    if (receivedToken) {
+      setToken(receivedToken);
+      localStorage.setItem("token", receivedToken);
+    }
   };
 
   const logout = async () => {
@@ -52,6 +68,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       localStorage.removeItem("token");
       setUser(null);
+      setToken(null);
     }
   };
 
@@ -59,6 +76,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
+        token,
         isAuthenticated: !!user,
         isAdmin: user?.role === "admin",
         login,

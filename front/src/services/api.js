@@ -1,9 +1,22 @@
 export const API_URL =
   import.meta.env.VITE_API_URL || "https://punto-and-trama.onrender.com";
 
+export const authFetch = async (endpoint, options = {}) => {
+  const token = localStorage.getItem("token");
+  const headers = {
+    ...options.headers,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+  return fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    credentials: "include",
+    headers,
+  });
+};
+
 export const getProducts = async () => {
   try {
-    const response = await fetch(`${API_URL}/products`);
+    const response = await authFetch("/products");
     if (!response.ok) {
       throw new Error("Error al obtener los productos");
     }
@@ -16,7 +29,7 @@ export const getProducts = async () => {
 
 export const getCategories = async () => {
   try {
-    const response = await fetch(`${API_URL}/categories`);
+    const response = await authFetch("/categories");
     if (!response.ok) {
       throw new Error("Error al obtener las categorías");
     }
@@ -28,7 +41,7 @@ export const getCategories = async () => {
 };
 
 export const getProductById = async (id) => {
-  const res = await fetch(`${API_URL}/products/${id}`);
+  const res = await authFetch(`/products/${id}`);
   if (!res.ok) {
     throw new Error("Error al obtener el producto");
   }
@@ -36,7 +49,7 @@ export const getProductById = async (id) => {
 };
 
 export const getFeatured = async () => {
-  const res = await fetch(`${API_URL}/products/featured`);
+  const res = await authFetch("/products/featured");
   if (!res.ok) {
     throw new Error("Error al obtener los productos destacados");
   }
@@ -44,7 +57,7 @@ export const getFeatured = async () => {
 };
 
 export const getSubcategories = async () => {
-  const res = await fetch(`${API_URL}/subcategories`);
+  const res = await authFetch("/subcategories");
   if (!res.ok) {
     throw new Error("Error al obtener las subcategorías");
   }

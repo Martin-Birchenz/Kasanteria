@@ -14,6 +14,9 @@ export const AuthProvider = ({ children }) => {
         const res = await fetch(`${API_URL}/auth/verify`, {
           method: "GET",
           credentials: "include",
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
         });
         if (res.status === 401 || res.status === 403) {
           setUser(null);
@@ -37,7 +40,10 @@ export const AuthProvider = ({ children }) => {
     checkSession();
   }, []);
 
-  const login = async (userData) => {
+  const login = async (userData, token) => {
+    if (token) {
+      localStorage.setItem("token", token);
+    }
     setUser(userData);
   };
 
@@ -46,10 +52,14 @@ export const AuthProvider = ({ children }) => {
       await fetch(`${API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
     } catch (error) {
       console.error(error);
     } finally {
+      localStorage.removeItem("token");
       setUser(null);
     }
   };

@@ -14,9 +14,6 @@ export const AuthProvider = ({ children }) => {
         const res = await fetch(`${API_URL}/auth/verify`, {
           method: "GET",
           credentials: "include",
-          headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
         });
         if (res.status === 401 || res.status === 403) {
           setUser(null);

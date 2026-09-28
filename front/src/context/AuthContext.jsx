@@ -41,9 +41,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (userData, token) => {
-    if (token) {
-      localStorage.setItem("token", token);
-    }
     setUser(userData);
   };
 
@@ -52,9 +49,6 @@ export const AuthProvider = ({ children }) => {
       await fetch(`${API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
       });
     } catch (error) {
       console.error(error);

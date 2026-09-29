@@ -56,11 +56,10 @@ export const AdminSubcategories = () => {
     setFeedback({ message: "", type: "" });
 
     try {
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const res = await fetch(`${API_URL}/subcategories`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         credentials: "include",
         body: JSON.stringify({
           name: subcategoryName.trim(),

@@ -45,11 +45,10 @@ export const AdminCategories = () => {
     setFeedback({ message: "", type: "" });
 
     try {
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const res = await fetch(`${API_URL}/categories`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         credentials: "include",
         body: JSON.stringify({ name: newCatName.trim() }),
       });

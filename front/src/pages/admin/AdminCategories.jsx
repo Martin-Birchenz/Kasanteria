@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import { Loader } from "../../components/Loader.jsx";
 import "../../styles/adminCategories.css";
 import { API_URL } from "../../services/api.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export const AdminCategories = () => {
+  const { token } = useAuth();
+
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newCatName, setNewCatName] = useState("");
@@ -32,11 +35,14 @@ export const AdminCategories = () => {
   }, []);
 
   useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => setMessage(null), 5000);
+    if (feedback.message) {
+      const timer = setTimeout(
+        () => setFeedback({ message: "", type: "" }),
+        5000,
+      );
       return () => clearTimeout(timer);
     }
-  }, [message]);
+  }, [feedback]);
 
   const handleCreateCategory = async (event) => {
     event.preventDefault();
@@ -45,7 +51,10 @@ export const AdminCategories = () => {
     setFeedback({ message: "", type: "" });
 
     try {
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const headers = {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      };
       const res = await fetch(`${API_URL}/categories`, {
         method: "POST",
         headers,
@@ -72,25 +81,27 @@ export const AdminCategories = () => {
 
   return (
     <div className="admin-cat-container">
-      {message && (
+      {feedback.message && (
         <div
-          className="admin-alert success"
+          className={`admin-alert ${feedback.type === "danger" ? "danger" : "success"}`}
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            marginBottom: "1.5rem",
           }}
         >
-          <span>{message}</span>
+          <span>{feedback.message}</span>
           <button
             type="button"
-            onClick={() => setMessage(null)}
+            onClick={() => setFeedback({ message: "", type: "" })}
             style={{
               background: "transparent",
               border: "none",
               fontWeight: "700",
               cursor: "pointer",
               color: "inherit",
+              fontSize: "1rem",
             }}
           >
             ✕
@@ -98,29 +109,16 @@ export const AdminCategories = () => {
         </div>
       )}
 
-      {error && (
-        <div
-          className="admin-alert danger"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span>{typeof error === "string" ? error : error.message}</span>
-          <button
-            type="button"
-            onClick={() => setError(null)}
-            style={{
-              background: "transparent",
-              border: "none",
-              fontWeight: "700",
-              cursor: "pointer",
-              color: "inherit",
-            }}
-          >
-            ✕
-          </button>
+      <div className="admin-subcat-header">
+        <h2>Gestión de Subcategorías</h2>
+        <p className="admin-subcat-subtitle">
+          Organiza tipos específicos dentro de cada categoría principal
+        </p>
+      </div>
+
+      {feedback.message && (
+        <div className={`feedback-alert ${feedback.type}`}>
+          {feedback.message}
         </div>
       )}
 

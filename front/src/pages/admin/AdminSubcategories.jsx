@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import { Loader } from "../../components/Loader.jsx";
 import "../../styles/adminSubcategories.css";
 import { API_URL } from "../../services/api.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export const AdminSubcategories = () => {
+  const { token } = useAuth();
+
   const [subcategories, setSubcategories] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,11 +44,14 @@ export const AdminSubcategories = () => {
   }, []);
 
   useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => setMessage(null), 5000);
+    if (feedback.message) {
+      const timer = setTimeout(
+        () => setFeedback({ message: "", type: "" }),
+        5000,
+      );
       return () => clearTimeout(timer);
     }
-  }, [message]);
+  }, [feedback]);
 
   const handleCreate = async (event) => {
     event.preventDefault();
@@ -56,7 +62,10 @@ export const AdminSubcategories = () => {
     setFeedback({ message: "", type: "" });
 
     try {
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const headers = {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      };
       const res = await fetch(`${API_URL}/subcategories`, {
         method: "POST",
         headers,
@@ -93,51 +102,27 @@ export const AdminSubcategories = () => {
 
   return (
     <div className="admin-subcat-container">
-      {message && (
+      {feedback.message && (
         <div
-          className="admin-alert success"
+          className={`admin-alert ${feedback.type === "danger" ? "danger" : "success"}`}
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            marginBottom: "1.5rem",
           }}
         >
-          <span>{message}</span>
+          <span>{feedback.message}</span>
           <button
             type="button"
-            onClick={() => setMessage(null)}
+            onClick={() => setFeedback({ message: "", type: "" })}
             style={{
               background: "transparent",
               border: "none",
               fontWeight: "700",
               cursor: "pointer",
               color: "inherit",
-            }}
-          >
-            ✕
-          </button>
-        </div>
-      )}
-
-      {error && (
-        <div
-          className="admin-alert danger"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span>{typeof error === "string" ? error : error.message}</span>
-          <button
-            type="button"
-            onClick={() => setError(null)}
-            style={{
-              background: "transparent",
-              border: "none",
-              fontWeight: "700",
-              cursor: "pointer",
-              color: "inherit",
+              fontSize: "1rem",
             }}
           >
             ✕

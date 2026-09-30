@@ -22,7 +22,7 @@ const Navbar = () => {
         </button>
 
         <Link to="/" className="brand-logo" onClick={() => setIsOpen(false)}>
-          Punto &amp; Trama
+          Nüdo e Hilarias
           <span className="brand-sub">Mercería &amp; Telas</span>
         </Link>
 

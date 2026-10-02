@@ -182,6 +182,13 @@ export const AdminDashboard = () => {
     }
   }, [message]);
 
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const handleImageChange = (event) => {
     const files = Array.from(event.target.files);
     setImages(files);

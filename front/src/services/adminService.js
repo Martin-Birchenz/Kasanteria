@@ -55,7 +55,10 @@ export const toggleFeaturedStatus = async (
   currentFeatured,
   token,
 ) => {
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
   const response = await fetch(`${API_URL}/products/${productId}/featured`, {
     method: "PATCH",
     headers,

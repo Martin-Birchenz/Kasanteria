@@ -35,7 +35,10 @@ export const updateProductWithImages = async (productId, formData, token) => {
 };
 
 export const toggleProductsStatus = async (productId, currentStatus, token) => {
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
   const response = await fetch(`${API_URL}/products/${productId}/status`, {
     method: "PATCH",
     headers,

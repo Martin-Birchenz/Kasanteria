@@ -50,7 +50,11 @@ export const toggleProductsStatus = async (productId, currentStatus, token) => {
   return data;
 };
 
-export const toggleFeaturedStatus = async (productId, currentFeatured) => {
+export const toggleFeaturedStatus = async (
+  productId,
+  currentFeatured,
+  token,
+) => {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await fetch(`${API_URL}/products/${productId}/featured`, {
     method: "PATCH",

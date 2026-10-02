@@ -15,7 +15,7 @@ export const createProductWithImages = async (formData, token) => {
   return data;
 };
 
-export const updateProductWithImages = async (productId, formData) => {
+export const updateProductWithImages = async (productId, formData, token) => {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await fetch(`${API_URL}/products/${productId}`, {
     method: "PUT",

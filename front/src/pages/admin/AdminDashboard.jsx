@@ -216,7 +216,7 @@ export const AdminDashboard = () => {
       });
 
       if (editingId) {
-        await updateProductWithImages(editingId, formData);
+        await updateProductWithImages(editingId, formData, token);
         setMessage("Producto actualizado exitosamente");
       } else {
         await createProductWithImages(formData, token);
